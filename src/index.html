@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>在线文档</title>
+        <meta name="renderer" content="webkit">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta content="width=device-width,minimum-scale=1.0,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,minimal-ui" name="viewport">
+        <!-- <link rel="icon" href="https://markdown.zhaoguolei.com/favicon.ico" type="image/x-icon"/>
+        <link rel="shortcut icon" href="https://markdown.zhaoguolei.com/favicon.ico" type="image/x-icon"/> -->
+        <link rel="stylesheet" href="static/iconfont/iconfont.css">
+        <link rel="stylesheet" href="/static/css/highlightjs.css">
+        <link rel="stylesheet" href="/static/css/page.css">
+        <link rel='stylesheet' href='/static/css/bootstrap.min.css'>
+        <link rel='stylesheet' href='/static/css/bootstrap-theme.min.css'>
+        <link rel="stylesheet" href="/static/css/diy.css">
+        <script src='/static/js/jquery-3.2.1.min.js'></script>
+        <script src='/static/js/bootstrap.min.js'></script>
+        <script src='/static/js/marked.js'></script>
+        
+        <script src="/static/js/typeahead.jquery.js"></script>
+    </head>
+    <body>
+        <div class="progress-indicator-2"></div>
+        <div id="nav-mini"><i class="iconfont">&#xe653;</i></div>
+        <div id="nav">
+            <div class="nav-inner">
+                <h2 class="nav_title">在线文档</h2>
+                <div class="nav-search">
+                    <input type="text" value="" id="search" class="typeahead" placeholder="搜索">
+                </div>
+                
+                <div id="nav-tree">
+                    <ul id="root_menu">
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="content">
+            <div class="markdown-body" id="content_body">
+                
+            </div>
+        </div>
+        <script type="text/javascript">
+            window.options = {
+                name: "在线文档",
+                markdownbase:"markdown",
+                defaultmenuindex:0,
+                menu:[
+                    {
+                        githubbase:"TarsCloud",
+                        githubitem:"TarsDocs",
+                        githubbranch:"master",
+                        summary:"SUMMARY.md",
+                        defaultmarkdown:"README.md"
+                    },
+                ],
+                
+            };
+        </script>
+        <script src='/static/js/diy.js'></script>
+    </body>
+
+</html>

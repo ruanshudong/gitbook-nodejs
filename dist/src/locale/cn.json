@@ -1,0 +1,255 @@
+{
+  "localeCode": "cn",
+  "localeName": "中文",
+  "header": {
+    "tab": {
+      "Index": "首页",
+      "Doc": "文档",
+      "About": "关于我们",
+      "Console": "控制台",
+      "Login": "登录",
+      "Logout": "退出",
+      "Register": "免费注册"
+    },
+    "copyright": "Tars Team",
+    "start": "立即体验"
+  },
+  "login":{
+    "loginTitle": "请登录",
+    "userName": "用户名",
+    "password": "密码",
+    "repeatPassword": "二次确认密码",
+    "login": "登录",
+    "toRegisterPage": "没有账号？前往注册",
+    "toLoginPage": "直接前往登录",
+    "userNameTips": "用户名不能为空",
+    "userNameRegTips": "用户名只能包含英文字母，数字或下划线, 长度在3~32个字符",
+    "passwordTips": "密码不能为空",
+    "passwordNoCorrect": "密码错误",
+    "userNoExist": "用户名不存在",
+    "loginFailed": "登录失败",
+    "registerTitle": "请注册",
+    "repeatPasswordTips": "二次确认密码不能为空",
+    "register": "注册",
+    "passwordDiff": "两次密码输入不一致，请修改",
+    "hasExist": "用户名已存在",
+    "registerSucc": "注册成功",
+    "registerFailed": "注册失败",
+    "getUidFailed": "获取用户信息失败",
+    "logout": "退出登录",
+    "noLogin": "您还没有登录"
+  },
+  "common": {
+    "search": "查询",
+    "nextPage": "下一页",
+    "prevPage": "上一页",
+    "nodata": "没有数据",
+    "noLogin": "您还没有登录",
+    "admin": "admin用户, 拥有所有权限",
+    "success": "成功",
+    "failed": "失败",
+    "confirmTitle": "系统提示",
+    "systemError": "系统内部错误",
+    "noPrivilage": "没有权限",
+    "notEmpty": "不能为空",
+    "needNumber": "必须为数字",
+    "needArray": "必须为数组",
+    "needObject": "必须为对象",
+    "needBoolean": "必须为布尔值",
+    "error": {
+      "-1": "系统错误",
+      "-2": "创建TARS环境失败",
+      "-3": "TARS环境个数超出限制, 如有需要请与管理员联系!",
+      "-4": "加载TARS环境信息失败",
+      "-5": "分配网段失败",
+      "-6": "加载IDC信息失败",
+      "-7": "系统已经无可用网段, 请与管理员联系!",
+      "-8": "无TARS环境",
+      "-9": "TARS存在没有联通的网络",
+      "-10": "请将之前申请的TARS环境完成网络联通"
+    }
+  },
+  "tars": {
+    "loadSuccess": "加载TARS成功",
+    "loadFailed": "加载TARS失败",
+    "noEnoughResource": "没有足够的资源",
+    "netstatus": {
+      "1": "申请网络打通",
+      "2": "网络连通"
+    },
+    "alloc": {
+      "info": "新分配网段嘛(一个网段支持253台节点服务器)?",
+      "yes": "确定",
+      "cancel": "取消",
+      "hint": "申请网段",
+      "apply": "请先将已经分配的网段申请连通, 再分配新的网段!"
+    },
+    "release": {
+      "info": "释放分配的网段么?释放后, 该网段节点服务将无法连接到Tars框架!",
+      "yes": "确定",
+      "cancel": "取消",
+      "hint": "释放网段"
+    },
+    "list": {
+      "IDC": "集群区域",
+      "tarsNetMask": "节点网络",
+      "addNetwork": "添加网络",
+      "tarsOpenInner": "内网管理平台",
+      "tarsOpenOuter": "外网管理平台",
+      "tarsProxy": "集群地址",
+      "hint": "修改外网访问状态",
+      "createOuter": "开启外网访问",
+      "viewTarsNodeInstall": "查看tarsnode安装",
+      "openOuter": "打开TARS管理平台外网访问么?",
+      "closeOuter": "关闭TARS管理平台外网访问么?",
+      "finishTars": "TARS安装成功",
+      "waitNetwork": "点击连接网络",
+      "success": "正常",
+      "tarsUninstall": "卸载",
+      "installTarsNode": {
+        "title": "安装TarsNode",
+        "step1": "步骤一",
+        "step2": "步骤二",
+        "step3": "步骤三",
+        "step1Info": "完成网络打通",
+        "step2Info": "在服务器(centos)上执行以下步骤:",
+        "step3Info": "完成tarsnode的监控, 在crontab中配置: "
+      }
+    },
+    "install": {
+      "create": "创建Tars环境",
+      "next": "下一步",
+      "createNew": "创建",
+      "creating": "正在创建",
+      "networkConnect": "配置网络",
+      "tarsName": "环境名称",
+      "type": "环境类型",
+      "typeTest": "测试",
+      "typeReal": "正式",
+      "outer": "外网可访问TARS管理平台",
+      "outerInfo": "您可以选择关闭外网访问, 在完成网络联通后, 通过内网来访问TARS管理平台",
+      "tarsNamePlaceHolder": "请输入环境名称, 例如: 广州验证环境",
+      "nameRegTips": "TARS环境名称长度大于1, 小于20个字符",
+      "createTarsFailed": "创建TARS环境失败",
+      "installTars": "正在安装TARS, 预计10s",
+      "waitWebSucc": "TARS安装成功, 正在启动集群, 预计1分钟, 请耐心等候",
+      "noEnoughResource": "没有足够的资源, 无法创建TARS环境",
+      "IDC": "集群区域",
+      "chooseIDC": "请选择区域",
+      "loadIDCFailed": "加载机房信息出错",
+      "idcRegTips": "必须选择一个机房",
+      "tarsInnerUrl": "内网管理平台",
+      "tarsOuterUrl": "外网管理平台",
+      "tarsOpenInner": "打开内网管理平台",
+      "tarsOpenOuter": "打开外网管理平台",
+      "tarsProxy": "集群地址",
+      "tarsNetMask": "节点网络",
+      "intallSuccess": "安装成功"
+    },
+    "uninstall": {
+      "tarsName": "TARS环境名称",
+      "tarsUninstall": "卸载",
+      "tarsUninstallTitle": "卸载确认",
+      "uninstallSuccess": "卸载TARS成功",
+      "uninstallFailed": "卸载TARS失败",
+      "confirmUninstallDesc": "请输入TARS环境名称, 确认卸载! 卸载后, 数据无法恢复!!",
+      "uninstallName": "Tars环境名称输入错误",
+      "uninstalled": "已经卸载"
+    },
+    "network": {
+      "title": "二步完成节点机和TARS环境打通",
+      "viewHelper": "点击查看帮助",
+      "createNetwork": "在腾讯云上准备私有网络以及节点服务",
+      "createNetworkDesc": "注意: 请在指定区域配置以上的私有网络, 才能完成节点服务器和TARS框架的网络打通",
+      "IDC": "集群区域",
+      "CIDR": "IPv4(CIDR)",
+      "applyPeer":"在腾讯云控制台申请和TARS框架的对等网络打通",
+      "applyPeerDesc": "注意: 请尽快去腾讯云申请对等网络打通",
+      "token": "私有网络名称",
+      "mainAccount": "TARS 主账号",
+      "mainAccountVpcid": "TARS CCNID"
+    },
+    "helper": {
+      "entry": {
+        "title": "选择您在腾讯云的账号类型",
+        "person": "腾讯云个人账号",
+        "enterprise": "腾讯云企业账号",
+        "info": "请根据您在腾讯云上不同的账号类型选择合适的流程"
+      },
+      "vpc": {
+        "vpcName": "VPC名称",
+        "IPv4": "IPv4 CIDR",
+        "peerName": "对等网络名称",
+        "region": "对端区域",
+        "account": "对端账号",
+        "vpcid": "对端网络",
+        "0": {
+          "title": "新建私有网络",
+          "info": ""
+        },
+        "1": {
+          "title": "选择区域",
+          "info": "选择区域"
+        },
+        "2": {
+          "title": "新建VPC",
+          "info": "私网和子网可以设置为一样"
+        },
+        "3": {
+          "title": "对等网络",
+          "info": "选择区域新建对等网络"
+        },
+        "4": {
+          "title": "新建对等网络",
+          "info": ""
+        },
+        "5": {
+          "title": "腾讯云购买服务器",
+          "info": "如果还没有购买服务器, 则在腾讯云购买服务器, 主要选择对应的区域和网络"
+        },
+        "6": {
+          "title": "已有服务器变更私有网络",
+          "info": "如果在同一个区域已经购买服务器, 可以直接变更私有网络"
+        }
+      },
+      "ccn": {
+        "vpcName": "VPC名称",
+        "IPv4": "IPv4 CIDR",
+        "account": "账号ID",
+        "ccnid": "云联网ID",
+        "0": {
+          "title": "进入私有网络",
+          "info": ""
+        },
+        "1": {
+          "title": "选择区域",
+          "info": "选择区域"
+        },
+        "2": {
+          "title": "新建VPC",
+          "info": "初始子网和私有网络可以设置为一样"
+        },
+        "3": {
+          "title": "配置私有网络",
+          "info": "选择区域配置私有网络"
+        },
+        "4": {
+          "title": "关联云联网",
+          "info": "点击关联云联网, 完成和TARS框架的网路连接"
+        },
+        "5": {
+          "title": "关联云联网",
+          "info": ""
+        },
+        "6": {
+          "title": "腾讯云购买服务器",
+          "info": "如果还没有购买服务器, 则在腾讯云购买服务器, 注意选择对应的区域和网络"
+        },
+        "7": {
+          "title": "已有服务器变更私有网络",
+          "info": "如果在同一个区域已经购买服务器, 可以直接变更私有网络"
+        }
+      }
+    }
+  }
+}
