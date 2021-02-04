@@ -78,6 +78,8 @@ class TreeController {
     }
 
     public static async tree(ctx: Koa.Context) {
+        this._treeData=[];
+        this.loadTree();
         ctx.makeResObj(200, "succ", this._treeData);
     }
 }
