@@ -33,9 +33,10 @@ class TreeController {
         return data;
     }
 
-    public static initialize() {
+    public static loadTree() {
 
-        // const Summary = fs.readFileSync(path.join(webConf.respository.path, 'test.md')).toString();
+        this._id = 0;
+
         const Summary = fs.readFileSync(path.join(webConf.respository.path, 'SUMMARY.md')).toString();
 
         const tokens = marked.lexer(Summary);
@@ -55,11 +56,16 @@ class TreeController {
     }
 
     protected static parseItem(data: any, items: any[]) {
+
         items.forEach(i => {
 
             const item = this.parseText(i);
 
-            data.children.push(item);
+            if (data) {
+                data.children.push(item);
+            } else {
+                this._treeData.push(item);
+            }
 
             if (i.type == 'list_item') {
                 i.tokens.forEach(j => {
@@ -76,6 +82,6 @@ class TreeController {
     }
 }
 
-TreeController.initialize();
+TreeController.loadTree();
 
 export default TreeController;

@@ -40,6 +40,11 @@ class ViewController {
             subpath = page.substring(pos + prefix.length);
         }
 
+        const anchor: number = subpath.indexOf(prefix);
+        if (anchor != -1) {
+            subpath = subpath.substring(0, anchor);
+        }
+
         const f = fs.lstatSync(path.join(webConf.respository.path, subpath));
         if (!f.isFile()) {
             subpath = defaultPage;
