@@ -8,7 +8,7 @@ import hljs from 'highlight.js';
 
 class ViewController {
 
-    public static initialize() {
+    public constructor() {
         marked.setOptions({
             renderer: new marked.Renderer(),
             highlight: function (code: string, language: string) {
@@ -25,7 +25,7 @@ class ViewController {
         });
     }
 
-    public static async view(ctx: Koa.Context) {
+    public async view(ctx: Koa.Context) {
 
         const defaultPage = 'README.md';
         const prefix = '#';
@@ -58,6 +58,6 @@ class ViewController {
     }
 }
 
-ViewController.initialize();
+// ViewController.initialize();
 
 export default ViewController;

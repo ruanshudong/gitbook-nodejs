@@ -1,20 +1,23 @@
 import * as Koa from "koa";
-import { pageConf, apiConf } from "./routerConf";
 import Router from "koa-router";
-// import _ from "lodash";
+import { confType } from "./type";
 
-import noCacheMidware from "../midware/noCacheMidware";
-import { paramsDealMidware, paramsCheckMidware } from "../midware/paramsMidware";
+import { pageConf, apiConf } from "../app/index";
+
+import { ssoConf } from "../sso/index";
+
+import noCacheMidware from "./noCacheMidware";
+import { paramsDealMidware, paramsCheckMidware } from "./paramsMidware";
 
 //获取路由
 const getRouter = (prefix: string, router: Router, routerConf: any[]) => {
-    routerConf.forEach(function (conf: any) {
+    routerConf.forEach(function (conf: confType) {
         try {
             const [method, url, obj, controller, checkRule, validParams] = conf;
 
             //前置参数合并校验相关中间件
             router.register(prefix + url, [method], [paramsDealMidware(validParams), paramsCheckMidware(checkRule), noCacheMidware, async (ctx: Koa.Context, next: Koa.Next) => {
-                
+               
                 await controller.call(obj, ctx);
                 await next();
             }]);
@@ -34,4 +37,7 @@ getRouter("", pageRouter, pageConf);
 const apiRouter = new Router();
 getRouter("/pages/api", apiRouter, apiConf);
 
-export { pageRouter, apiRouter };
+const ssoRouter = new Router();
+getRouter("/pages/sso", ssoRouter, ssoConf);
+
+export { pageRouter, apiRouter, ssoRouter };

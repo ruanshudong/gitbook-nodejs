@@ -5,9 +5,11 @@ import bodyparser from "koa-bodyparser";
 import staticRouter from "koa-static";
 import helmet from "koa-helmet";
 import clone from 'git-clone';
-import { pageRouter, apiRouter } from "./app/router";
+// import { pageRouter, apiRouter, ssoRouter } from "./midware";
+import { pageRouter, apiRouter } from "./midware";
 import webConf from './config/webConf'
 import TreeController from './app/controller/TreeController'
+
 const app = new Koa();
 
 //信任proxy头部，支持 X-Forwarded-Host
@@ -26,6 +28,7 @@ app.use(staticRouter(path.join(__dirname, "../client/markdown"), { maxage: 7 * 2
 
 app.use(pageRouter.routes());
 app.use(apiRouter.routes());
+// app.use(ssoRouter.routes());
 
 const hostname = process.env.IP || "0.0.0.0";
 const port = process.env.PORT || 6080;
@@ -55,7 +58,7 @@ const doClone = async () => {
             await fs.remove(webConf.respository.tmpPath);
             await fs.remove(webConf.respository.path + ".bak");
 
-            TreeController.loadTree();
+            // TreeController.loadTree();
 
             console.log(`cloneing ${webConf.respository.repo} => ${webConf.respository.path} succ`);
         } else {
