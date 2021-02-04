@@ -30,7 +30,7 @@ class ViewController {
         const defaultPage = 'README.md';
         const prefix = '#';
 
-        const page : string = ctx.paramsObj.page;
+        const page : string = decodeURIComponent(ctx.paramsObj.page);
 
         let subpath: string;
         const pos: number = page.indexOf(prefix);

@@ -1,7 +1,8 @@
 
 import path from "path";
 
-export default {
+let webConf = {
+    
     webConf: {
         port: 6080,             //服务启动端口
         loggerPath: path.join(__dirname, "../log"),    //本地日志的目录
@@ -12,6 +13,14 @@ export default {
         repo: 'https://github.com/TarsCloud/TarsDocs',
         tmpPath: path.join(__dirname, "../../client/tmp"),   
         path: path.join(__dirname, "../../client/markdown"),
-        interval: 3600 * 1000
+        interval: 3600 * 1000,
+        cloneOnStart: true
     }
 };
+
+if (process.env.NODE_ENV == 'doc') {
+    webConf.respository.repo = 'http://gitlab.whup.com/up-document/docs.git';
+    webConf.respository.cloneOnStart = false;
+}
+
+export default webConf;

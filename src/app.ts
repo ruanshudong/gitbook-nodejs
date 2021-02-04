@@ -7,6 +7,7 @@ import helmet from "koa-helmet";
 import clone from 'git-clone';
 import { pageRouter, apiRouter } from "./app/router";
 import webConf from './config/webConf'
+import TreeController from './app/controller/TreeController'
 const app = new Koa();
 
 //信任proxy头部，支持 X-Forwarded-Host
@@ -54,6 +55,8 @@ const doClone = async () => {
             await fs.remove(webConf.respository.tmpPath);
             await fs.remove(webConf.respository.path + ".bak");
 
+            TreeController.loadTree();
+
             console.log(`cloneing ${webConf.respository.repo} => ${webConf.respository.path} succ`);
         } else {
             console.log(`cloneing error: `, e);
@@ -63,7 +66,9 @@ const doClone = async () => {
     });
 }
 
-doClone();
+if (webConf.respository.cloneOnStart) {
+    doClone();
+}
 
 setInterval(() => {
     console.log('setInterval', webConf.respository.interval);

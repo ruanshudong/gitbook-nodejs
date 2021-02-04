@@ -5,7 +5,8 @@
   "author": "ruanshudong <ruanshudong@qq.com>",
   "private": true,
   "scripts": {
-    "dev": "./node_modules/.bin/nodemon --exec ./node_modules/.bin/ts-node ./src/app.ts --watch ./src -e ts,tsx ",
+    "dev": "cross-env NODE_ENV=tars ./node_modules/.bin/nodemon --exec ./node_modules/.bin/ts-node ./src/app.ts --watch ./src -e ts,tsx ",
+    "doc": "cross-env NODE_ENV=doc ./node_modules/.bin/nodemon --exec ./node_modules/.bin/ts-node ./src/app.ts --watch ./src -e ts,tsx ",
     "build": "npm run eslint && tsc; cp -rf ./src/locale dist",
     "eslint": "./node_modules/.bin/eslint src --ext .ts",
     "start": "node dist/app.js",
@@ -55,6 +56,7 @@
     "eslint": "^6.8.0",
     "eslint-config-alloy": "^3.10.0",
     "eslint-plugin-vue": "^7.5.0",
+    "cross-env": "^7.0.2",
     "nodemon": "^1.19.4",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
