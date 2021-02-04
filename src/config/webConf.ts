@@ -1,7 +1,7 @@
 
 import path from "path";
 
-let webConf = {
+const webConf = {
     
     webConf: {
         port: 6080,             //服务启动端口

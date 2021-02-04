@@ -63,9 +63,9 @@ var TreeController = /** @class */ (function () {
         };
         return data;
     };
-    TreeController.initialize = function () {
+    TreeController.loadTree = function () {
         var _this = this;
-        // const Summary = fs.readFileSync(path.join(webConf.respository.path, 'test.md')).toString();
+        this._id = 0;
         var Summary = fs_extra_1.default.readFileSync(path_1.default.join(webConf_1.default.respository.path, 'SUMMARY.md')).toString();
         var tokens = marked_1.default.lexer(Summary);
         tokens.forEach(function (i) {
@@ -82,8 +82,14 @@ var TreeController = /** @class */ (function () {
     TreeController.parseItem = function (data, items) {
         var _this = this;
         items.forEach(function (i) {
+            // console.log(i);
             var item = _this.parseText(i);
-            data.children.push(item);
+            if (data) {
+                data.children.push(item);
+            }
+            else {
+                _this._treeData.push(item);
+            }
             if (i.type == 'list_item') {
                 i.tokens.forEach(function (j) {
                     if (j.type == 'list') {
@@ -96,7 +102,12 @@ var TreeController = /** @class */ (function () {
     TreeController.tree = function (ctx) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                ctx.makeResObj(200, "succ", this._treeData);
+                //每次clone的时候解析一次，如果需要本地目录文件每次访问的时候，实时解析，去掉该注释
+                /*
+                this._treeData=[];
+                this.loadTree();
+                */
+                ctx.makeResObj(200, "succ", { tree: this._treeData, title: webConf_1.default.webConf.title });
                 return [2 /*return*/];
             });
         });
@@ -105,5 +116,5 @@ var TreeController = /** @class */ (function () {
     TreeController._treeData = [];
     return TreeController;
 }());
-TreeController.initialize();
+TreeController.loadTree();
 exports.default = TreeController;

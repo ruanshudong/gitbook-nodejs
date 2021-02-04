@@ -65,17 +65,21 @@ var ViewController = /** @class */ (function () {
     };
     ViewController.view = function (ctx) {
         return __awaiter(this, void 0, void 0, function () {
-            var defaultPage, prefix, page, subpath, pos, f, content, html;
+            var defaultPage, prefix, page, subpath, pos, anchor, f, content, html;
             return __generator(this, function (_a) {
                 defaultPage = 'README.md';
                 prefix = '#';
-                page = ctx.paramsObj.page;
+                page = decodeURIComponent(ctx.paramsObj.page);
                 pos = page.indexOf(prefix);
                 if (pos != 0) {
                     subpath = defaultPage;
                 }
                 else {
                     subpath = page.substring(pos + prefix.length);
+                }
+                anchor = subpath.indexOf(prefix);
+                if (anchor != -1) {
+                    subpath = subpath.substring(0, anchor);
                 }
                 f = fs_extra_1.default.lstatSync(path_1.default.join(webConf_1.default.respository.path, subpath));
                 if (!f.isFile()) {

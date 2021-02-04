@@ -67,6 +67,7 @@ var koa_helmet_1 = __importDefault(require("koa-helmet"));
 var git_clone_1 = __importDefault(require("git-clone"));
 var router_1 = require("./app/router");
 var webConf_1 = __importDefault(require("./config/webConf"));
+var TreeController_1 = __importDefault(require("./app/controller/TreeController"));
 var app = new koa_1.default();
 //信任proxy头部，支持 X-Forwarded-Host
 app.proxy = true;
@@ -111,6 +112,7 @@ var doClone = function () { return __awaiter(void 0, void 0, void 0, function ()
                                 return [4 /*yield*/, fs_extra_1.default.remove(webConf_1.default.respository.path + ".bak")];
                             case 2:
                                 _a.sent();
+                                TreeController_1.default.loadTree();
                                 console.log("cloneing " + webConf_1.default.respository.repo + " => " + webConf_1.default.respository.path + " succ");
                                 return [3 /*break*/, 4];
                             case 3:
@@ -126,7 +128,9 @@ var doClone = function () { return __awaiter(void 0, void 0, void 0, function ()
         }
     });
 }); };
-doClone();
+if (webConf_1.default.respository.cloneOnStart) {
+    doClone();
+}
 setInterval(function () {
     console.log('setInterval', webConf_1.default.respository.interval);
     doClone();
