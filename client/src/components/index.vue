@@ -1,22 +1,8 @@
 <template>
   <el-container style="height: 500px; ">
     <el-aside width="300px" style="background-color: rgb(238, 241, 246)">
-
       <div>
-
         <el-tree :data="treeData" :props="defaultProps" @node-click="selectTree"></el-tree>
-<!-- 
-        <div class="left-tree" v-if="treeData && !treeData.length">
-          <p class="loading">{{ $t("common.noService") }}</p>
-        </div>
-        <div class="left-tree" v-if="!treeData" ref="treeLoading">
-          <div class="loading" v-if="treeData === false">
-            <p>{{ treeErrMsg }}</p>
-            <a href="javascript:;" @click="getTreeData">{{
-              $t("common.reTry")
-            }}</a>
-          </div>
-        </div> -->
       </div>
       
     </el-aside>
@@ -47,38 +33,38 @@ export default {
         }
     };
   },
-  directives: {
-    vscroll: {
-      componentUpdated(el) {
-        let boxEl = el;
-        let itemEl = el.children;
-        let currEl = null;
+  // directives: {
+  //   vscroll: {
+  //     componentUpdated(el) {
+  //       let boxEl = el;
+  //       let itemEl = el.children;
+  //       let currEl = null;
 
-        for(let i = 0; i < itemEl.length; i++) {
-          let item = itemEl.item(i);
+  //       for(let i = 0; i < itemEl.length; i++) {
+  //         let item = itemEl.item(i);
 
-          const iclass = item.getAttribute("class");
+  //         const iclass = item.getAttribute("class");
 
-          if (iclass && iclass.indexOf("active") > -1) {
-            currEl = item;
-          } else {
-            return;
-          }
-        };
+  //         if (iclass && iclass.indexOf("active") > -1) {
+  //           currEl = item;
+  //         } else {
+  //           return;
+  //         }
+  //       };
 
-        if (currEl.offsetLeft < boxEl.scrollLeft) {
-          const x = currEl.offsetLeft;
-          boxEl.scrollTo(x, 0);
-        } else if (
-          currEl.offsetLeft + currEl.offsetWidth >
-          boxEl.scrollLeft + boxEl.offsetWidth
-        ) {
-          const x = currEl.offsetLeft + currEl.offsetWidth - boxEl.offsetWidth;
-          boxEl.scrollTo(x, 0);
-        }
-      },
-    },
-  },
+  //       if (currEl.offsetLeft < boxEl.scrollLeft) {
+  //         const x = currEl.offsetLeft;
+  //         boxEl.scrollTo(x, 0);
+  //       } else if (
+  //         currEl.offsetLeft + currEl.offsetWidth >
+  //         boxEl.scrollLeft + boxEl.offsetWidth
+  //       ) {
+  //         const x = currEl.offsetLeft + currEl.offsetWidth - boxEl.offsetWidth;
+  //         boxEl.scrollTo(x, 0);
+  //       }
+  //     },
+  //   },
+  // },
   methods: {
     iconLoading() {
       const that = this;
@@ -123,8 +109,9 @@ export default {
           searchKey: key || "",
           type: type
         })
-        .then((res) => {
-          this.treeData = res;
+        .then((data) => {
+          document.title=data.title;
+          this.treeData = data.tree;
           this.handleData(this.treeData);
           this.selectTree({href: ''});
         })
@@ -137,7 +124,6 @@ export default {
   },
   created() {},
   mounted() {
-      document.title="TARS Document";
     this.getTreeData('', 0);
   },
 }

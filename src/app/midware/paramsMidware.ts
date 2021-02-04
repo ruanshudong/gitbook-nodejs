@@ -9,8 +9,6 @@ function paramsDealMidware(validParams: any) {
 
         const params = _.extend(ctx.query || {}, ctx.request.body || {});
 
-        console.log('query', ctx);
-
         if (validParams && _.isArray(validParams)) {
             ctx.paramsObj = {};
             validParams.forEach(function (v) {

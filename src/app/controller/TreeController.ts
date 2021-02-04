@@ -59,6 +59,8 @@ class TreeController {
 
         items.forEach(i => {
 
+            // console.log(i);
+
             const item = this.parseText(i);
 
             if (data) {
@@ -83,7 +85,7 @@ class TreeController {
         this._treeData=[];
         this.loadTree();
         */
-        ctx.makeResObj(200, "succ", this._treeData);
+        ctx.makeResObj(200, "succ", { tree: this._treeData, title: webConf.webConf.title });
     }
 }
 
