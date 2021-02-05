@@ -158,7 +158,7 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 ::-webkit-scrollbar-thumb{background-color:#4d7fbf}
 body{color:#333;font-size:16px}
 .el-aside{background:#fbfbfb;height:100%;border-right:1px solid rgb(0 0 0 / 7%); padding-top: 90px;}
-.el-main{padding:0 200px 40px!important}
+.el-main{padding:0 200px 40px!important; margin-top: 60px;}
 .el-tree{background:0 0!important}
 .el-tree-node{font-size:18px;line-height:1.6}
 .el-tree-node__content{padding:4px 14px!important}
