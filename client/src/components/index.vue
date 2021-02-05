@@ -1,21 +1,30 @@
 <template>
-  <el-container style="height: 500px">
+<el-container>
+  <el-header width="100%">
+    <img class="logo" src="/images/logo.png">
+    <div class="search_bar">      
+        <el-input placeholder="请输入搜索关键字" v-model="input" class="input-with-select">       
+        <el-button slot="append" icon="el-icon-search"></el-button>
+        </el-input>      
+    </div>
+    <div class="login_bar">你好，<span>64835173@qq.com</span><span class="v_line">|</span>退出</div>
+  </el-header>
+  <el-container>
     <el-aside width="300px">
-      <div>
-        <el-tree
-          :data="treeData"
-          :props="defaultProps"
-          @node-click="selectTree"
-        ></el-tree>
-      </div>
+        <div>
+          <el-tree
+            :data="treeData"
+            :props="defaultProps"
+            @node-click="selectTree"
+          ></el-tree>
+        </div>
     </el-aside>
-
-    <el-container>
-      <el-main>
-        <router-view></router-view>
-      </el-main>
-    </el-container>
+    <el-main>
+       <router-view></router-view>      
+    </el-main>
   </el-container>
+</el-container>
+
 </template>
 
 <script >
@@ -23,6 +32,7 @@ export default {
   name: "Index",
   data() {
     return {
+      input: '',
       treeErrMsg: "load failed",
       treeData: [],
       treeSearchKey: "",
@@ -147,7 +157,7 @@ input[type=search]::-webkit-search-cancel-button,input[type=search]::-webkit-sea
 ::-webkit-scrollbar{width:8px;height:8px;background-color:#f5f5f5}
 ::-webkit-scrollbar-thumb{background-color:#4d7fbf}
 body{color:#333;font-size:16px}
-.el-aside{background:#fbfbfb;height:100%;border-right:1px solid rgb(0 0 0 / 7%)}
+.el-aside{background:#fbfbfb;height:100%;border-right:1px solid rgb(0 0 0 / 7%); padding-top: 90px;}
 .el-main{padding:0 200px 40px!important}
 .el-tree{background:0 0!important}
 .el-tree-node{font-size:18px;line-height:1.6}
@@ -204,4 +214,25 @@ table th,table tr:nth-child(2n){background-color:#f8f8f8!important}
 /* 正常文件 */
 .is-leaf.el-tree-node__expand-icon:before{content: "\e78b"!important; color: #333; font-size: 18px;} 
 .is-current>.el-tree-node__content :before{ font-weight:bold;}
+
+.el-header{    position: fixed;
+    height: 55px;
+    top: 0px;
+    width: 100%;
+    z-index: 1000;
+    background: #F9F9f9;
+    border-bottom: 1px solid #DDD; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+
+    .logo{ margin:10px;}
+    .search_bar{ position: absolute; left: 400px; right:  400px; top: 10px;}
+    .login_bar{ position: absolute; right: 0; top: 15px; right: 20px; font-size: 14px; color: #333;}
+    .search_bar input{border: none;background: #EFEFEF;height: 35px;
+    line-height: 35px;    font-size: 14px;
+    color: #333;    padding: 0 8px;
+}
+    .login_bar span{ color: #4d7fbf;}
+      .login_bar span.v_line{margin: 0 10px; color: #999;}
+    .el-input-group__append{background: #ea7c21!important;}
+    .el-icon-search{font-size: 18px; color: #fff;}
+    /* .el-input.is-active .el-input__inner, .el-input__inner:focus{     border-color: none!important;} */
 </style>
