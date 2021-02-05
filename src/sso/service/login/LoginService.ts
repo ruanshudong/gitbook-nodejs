@@ -2,22 +2,22 @@ import { LoginDao } from '../../dao/LoginDao';
 import bcrypt from 'bcrypt-nodejs';
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
-
+import webConf from '../../../config/webConf';
 let secret = "d2DJ2#)84nD)92%1";
 
 const expireTime : number = 7 * 24 *60 * 60 * 1000;
 
 export default class LoginService {
 
-    private _loginDao: LoginDao;
+    private static _loginDao: LoginDao = new LoginDao(webConf.dbConf);
 
-    public constructor(config: any) {
+    // public constructor(config: any) {
 
-        this._loginDao = new LoginDao(config);
-    }
+    //     this._loginDao = new LoginDao(config);
+    // }
 
     //登录操作
-    public async login(uid: string, password: string) {
+    public static async login(uid: string, password: string) {
 
         let userInfo = await this._loginDao.getUserInfoByUid(uid);
 
@@ -38,32 +38,41 @@ export default class LoginService {
 
 
     //注册操作
-    public async register(uid: string, password: string) {
+    public static async register(uid: string, password: string, email: string) {
         let userInfo = await this._loginDao.getUserInfoByUid(uid);
         if (userInfo) {
             return { errMsg: '#login.hasExist#' };
         } else {
-            await this._loginDao.insertUserInfo(uid, bcrypt.hashSync(password));
+            await this._loginDao.insertUserInfo(uid, bcrypt.hashSync(password), email);
             return {};
         }
     }
 
     //注册操作
-    public async modifyPass(uid: string, password: string) {
+    public static async modifyPass(uid: string, password: string) {
 
         await this._loginDao.modifyPass(uid, bcrypt.hashSync(password));
         return {};
     };
 
-    public async getUidByTicket(ticket: string) {
+    public static async getUidByTicket(ticket: string) {
 
         let data : any = await this.verifyWebIDToken(ticket);
 
         return data.uid;
     }
 
+    public static async getUserInfoByTicket(ticket: string) {
 
-    public async validate(pUid: string, pTicket: string) {
+        let data: any = await this.verifyWebIDToken(ticket);
+
+        if (data.uid) {
+            return await this._loginDao.getUserInfoByUid(data.uid);
+        }
+        return null;
+    }
+
+    public static async validate(pUid: string, pTicket: string) {
         let uid = await this.getUidByTicket(pTicket);
         if (uid && uid === pUid) {
             return true;
@@ -73,7 +82,7 @@ export default class LoginService {
     }
 
     // 登陆成功，签发id_token
-    protected async signWebIDToken(claims: any, expireTime: number) {
+    protected static async signWebIDToken(claims: any, expireTime: number) {
         // // 使用claims签名jwt
         if (!claims.uid) {
             return null
@@ -85,7 +94,7 @@ export default class LoginService {
     }
 
     // 用户请求，验证cookie里的token是否有效
-    protected async verifyWebIDToken(id_token: string) {
+    protected static async verifyWebIDToken(id_token: string) {
         // 解析id_token拿到签名算法和key，并验证该id_token是否有效
         return new Promise(async (resolve, reject) => {
             jwt.verify(id_token, secret, function (err: any, claims: any) {

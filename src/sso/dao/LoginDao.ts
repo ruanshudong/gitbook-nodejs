@@ -29,11 +29,13 @@ export class LoginDao {
         });
     }
 
-    public async insertUserInfo(uid: string, password: string) {
+    public async insertUserInfo(uid: string, password: string, email: string) {
         // tUserInfo.upsert
         return await tUserInfo.upsert({
             uid: uid,
             password: password,
+            email: email,
+            activited: false,
             create_time: new Date(),
             update_time: new Date()
         });

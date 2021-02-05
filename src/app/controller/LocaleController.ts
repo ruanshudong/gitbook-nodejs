@@ -13,7 +13,7 @@ fileNames.forEach((fileName) => {
     
 export default class LocaleController {
 
-    public async getLocale(ctx: Koa.Context) {
+    public static async getLocale(ctx: Koa.Context) {
         ctx.makeResObj(200, "", locale || {});
     }
 }

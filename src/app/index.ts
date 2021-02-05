@@ -5,22 +5,15 @@ import TreeController from "./controller/TreeController";
 import ViewController from "./controller/ViewController";
 import { confType } from "../midware/type";
 
-// export type confType = [string, string, Function, any?, any?];
-
-const pageController = new PageController();
-const localeController = new LocaleController();
-const treeController = new TreeController();
-const viewController = new ViewController();
-
 const pageConf: Array<confType> = [
     //首页
-    ["get", "/", pageController, pageController.index]
+    ["get", "/", PageController, PageController.index],
 ];
 
 const apiConf: Array<confType> = [
-    ["get", "/get_locale", localeController, localeController.getLocale],
-    ["get", "/tree", treeController, treeController.tree],
-    ["get", "/view", viewController, viewController.view]
+    ["get", "/get_locale", LocaleController, LocaleController.getLocale],
+    ["get", "/tree", TreeController, TreeController.tree],
+    ["get", "/view", ViewController, ViewController.view]
 ];
 
 export { pageConf, apiConf };

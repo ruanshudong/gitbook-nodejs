@@ -5,10 +5,14 @@ import bodyparser from "koa-bodyparser";
 import staticRouter from "koa-static";
 import helmet from "koa-helmet";
 import clone from 'git-clone';
-// import { pageRouter, apiRouter, ssoRouter } from "./midware";
-import { pageRouter, apiRouter } from "./midware";
+import { pageRouter, apiRouter, ssoRouter } from "./midware";
+// import { pageRouter, apiRouter } from "./midware";
 import webConf from './config/webConf'
 import TreeController from './app/controller/TreeController'
+
+import loginConf from "./config/loginConf";
+
+import ssoMiddleware from "./midware/ssoMidware";
 
 const app = new Koa();
 
@@ -23,12 +27,14 @@ app.use(helmet());
 
 app.use(bodyparser());
 
+app.use(ssoMiddleware(loginConf));
+
 app.use(staticRouter(path.join(__dirname, "../client/dist"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
 app.use(staticRouter(path.join(__dirname, "../client/markdown"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
 
 app.use(pageRouter.routes());
 app.use(apiRouter.routes());
-// app.use(ssoRouter.routes());
+app.use(ssoRouter.routes());
 
 const hostname = process.env.IP || "0.0.0.0";
 const port = process.env.PORT || 6080;
@@ -58,7 +64,7 @@ const doClone = async () => {
             await fs.remove(webConf.respository.tmpPath);
             await fs.remove(webConf.respository.path + ".bak");
 
-            // TreeController.loadTree();
+            TreeController.loadTree();
 
             console.log(`cloneing ${webConf.respository.repo} => ${webConf.respository.path} succ`);
         } else {

@@ -4,38 +4,31 @@ import * as Koa from "koa";
 
 export default class LoginController {
 
-    private _loginService: LoginService;
+    // //登录页面控制，若已经有登录信息，则直接带票据跳转
+    // public static async loginPage(ctx: Koa.Context) {
+    //     let uid = ctx.cookies.get('uid');
+    //     let ticket = ctx.cookies.get('ticket');
+    //     if (uid && ticket) {
+    //         if (await LoginService.validate(uid, ticket)) {
+    //             ctx.redirect(ctx.paramsObj.redirect_url || '/');
+    //             return;
+    //         }
+    //     }
+    //     await ctx.render('login/login', { redirect_url: ctx.paramsObj.redirect_url || '/' });
+    // };
 
-    public constructor() {
-
-        this._loginService = new LoginService(webConf.dbConf);
-    }
-
-    //登录页面控制，若已经有登录信息，则直接带票据跳转
-    public async loginPage(ctx: Koa.Context) {
-        let uid = ctx.cookies.get('uid');
-        let ticket = ctx.cookies.get('ticket');
-        if (uid && ticket) {
-            if (await this._loginService.validate(uid, ticket)) {
-                ctx.redirect(ctx.paramsObj.redirect_url || '/');
-                return;
-            }
-        }
-        await ctx.render('login/login', { redirect_url: ctx.paramsObj.redirect_url || '/' });
-    };
-
-    //注册页面控制
-    public async registerPage (ctx: Koa.Context) {
-        await ctx.render('login/register', { redirect_url: ctx.paramsObj.redirect_url || '/' });
-    };
+    // //注册页面控制
+    // public static async registerPage (ctx: Koa.Context) {
+    //     await ctx.render('login/register', { redirect_url: ctx.paramsObj.redirect_url || '/' });
+    // };
 
     //登出操作，清理session并跳转
-    public async logout (ctx: Koa.Context) {
+    public static async logout (ctx: Koa.Context) {
         await ctx.redirect('/');
     };
 
     //登录接口
-    public async login (ctx: Koa.Context) {
+    public static async login (ctx: Koa.Context) {
 
         let uid = ctx.paramsObj.uid;
         let password = ctx.paramsObj.password;
@@ -47,7 +40,7 @@ export default class LoginController {
         try {
             if (captcha === sessionCaptcha) {
 
-                let rst = await this._loginService.login(uid, password);
+                let rst = await LoginService.login(uid, password);
                 if (rst.errMsg === undefined) {
                     ctx.makeResObj(200, rst.errMsg, { ticket: rst.ticket });
                 } else {
@@ -63,11 +56,11 @@ export default class LoginController {
     };
 
     //通过ticket取用户信息接口
-    public async getUidByTicket (ctx: Koa.Context) {
+    public static async getUidByTicket (ctx: Koa.Context) {
         try {
             let ticket = ctx.paramsObj.ticket;
             let uid = '';
-            if (uid = await this._loginService.getUidByTicket(ticket)) {
+            if (uid = await LoginService.getUidByTicket(ticket)) {
                 ctx.makeResObj(200, '', { uid: uid });
             } else {
                 ctx.makeResObj(200, '', { uid: '' });
@@ -79,11 +72,26 @@ export default class LoginController {
     };
 
     //校验ticket是否可用
-    public async validate (ctx: Koa.Context) {
+    public static async isLogin(ctx: Koa.Context) {
+
+        let uid = ctx.cookies.get('uid');
+        let ticket = ctx.cookies.get('ticket');
+        if (uid && ticket) {
+            if (await LoginService.validate(uid, ticket)) {
+                ctx.makeResObj(200, '', { login: true });
+                return;
+            }
+        }
+
+        ctx.redirect('/#login');
+    };
+
+    //校验ticket是否可用
+    public static async validate (ctx: Koa.Context) {
         try {
             let uid = ctx.paramsObj.uid;
             let ticket = ctx.paramsObj.ticket;
-            ctx.makeResObj(200, '', { result: await this._loginService.validate(uid, ticket) });
+            ctx.makeResObj(200, '', { result: await LoginService.validate(uid, ticket) });
         } catch (e) {
             // logger.error('[validate]', e.body ? e.body.message : e, ctx);
             ctx.makeResObj(500, e.body ? e.body.message : e);
@@ -91,16 +99,13 @@ export default class LoginController {
     };
 
     //注册接口
-    public async register (ctx: Koa.Context) {
+    public static async register (ctx: Koa.Context) {
         let uid = ctx.paramsObj.uid;
         let password = ctx.paramsObj.password;
-        let repeatPassword = ctx.paramsObj.repeat_password;
-        if (password != repeatPassword) {
-            ctx.makeResObj(500, '#login.passwordDiff#', {});
-            return;
-        }
+        let email = ctx.paramsObj.email;
+
         try {
-            let rst = await this._loginService.register(uid, password);
+            let rst = await LoginService.register(uid, password, email);
             if (rst && rst.errMsg) {
                 ctx.makeResObj(500, rst.errMsg, {});
             } else {
@@ -112,7 +117,7 @@ export default class LoginController {
         }
     };
 
-    public async isEnableLogin (ctx: Koa.Context) {
+    public static async isEnableLogin (ctx: Koa.Context) {
         try {
             ctx.makeResObj(200, '', { enableLogin: webConf.enableLogin || false });
         } catch (e) {
@@ -121,7 +126,7 @@ export default class LoginController {
         }
     };
 
-    public async getLoginUid (ctx: Koa.Context) {
+    public static async getLoginUid (ctx: Koa.Context) {
         try {
             ctx.makeResObj(200, '', { uid: ctx.uid || '' });
         } catch (e) {
@@ -131,7 +136,7 @@ export default class LoginController {
     };
 
 
-    public async modifyPass (ctx: Koa.Context) {
+    public static async modifyPass (ctx: Koa.Context) {
         let password = ctx.paramsObj.password;
         let repeatPassword = ctx.paramsObj.repeat_password;
         if (password != repeatPassword) {
@@ -141,7 +146,7 @@ export default class LoginController {
 
         try {
             let uid = ctx.uid || [];
-            await this._loginService.modifyPass(uid, password);
+            await LoginService.modifyPass(uid, password);
 
             // if (rst && rst.errMsg) {
             //     ctx.makeResObj(500, rst.errMsg, {});

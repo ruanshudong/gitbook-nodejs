@@ -11,6 +11,7 @@
     "axios": "^0.21.1",
     "core-js": "^3.6.4",
     "element-ui": "^2.15.0",
+    "sha1": "^1.1.1",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.6",
     "vue-cookie": "^1.1.4",

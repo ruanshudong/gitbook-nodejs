@@ -7,15 +7,14 @@ import marked from 'marked';
 
 class TreeController {
 
-    protected _id: number = 0;
-    protected _treeData = [];
-    protected _info = '';
+    protected static _id: number = 0;
+    protected static _treeData = [];
 
-    public constructor() {
-        this.loadTree();
-    }
+    // public constructor() {
+    //     this.loadTree();
+    // }
 
-    protected getToken(i) {
+    protected static getToken(i) {
         const token = i.tokens[0];
 
         if (token.tokens && token.tokens[0].type == 'link') {
@@ -24,7 +23,7 @@ class TreeController {
         return token;
     }
 
-    protected parseText(i) {
+    protected static parseText(i) {
 
         const token = this.getToken(i);
 
@@ -38,7 +37,7 @@ class TreeController {
         return data;
     }
 
-    public loadTree() {
+    public static loadTree() {
 
         this._id = 0;
 
@@ -60,7 +59,7 @@ class TreeController {
         })
     }
 
-    protected parseItem(data: any, items: any[]) {
+    protected static parseItem(data: any, items: any[]) {
 
         items.forEach(i => {
 
@@ -82,7 +81,7 @@ class TreeController {
         });
     }
 
-    public async tree(ctx: Koa.Context) {
+    public static async tree(ctx: Koa.Context) {
         //每次clone的时候解析一次，如果需要本地目录文件每次访问的时候，实时解析，去掉该注释
         /*
         this._treeData=[];
@@ -93,6 +92,6 @@ class TreeController {
     }
 }
 
-// TreeController.loadTree();
+TreeController.loadTree();
 
 export default TreeController;

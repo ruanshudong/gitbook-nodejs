@@ -1,8 +1,8 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
-import App from './App.vue'
-import router from './router/index'
+import Main from './Main.vue'
+import router from './router/main'
 
 import ElementUI from 'element-ui'
   
@@ -31,7 +31,7 @@ loadLang.call(this).then(() => {
     i18n: i18n,
     el: '#app',
     router,
-    components: {App},
-    template: '<App/>'
+    components: {Main},
+    template: '<Main/>'
   });
 })

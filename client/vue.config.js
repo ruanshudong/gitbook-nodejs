@@ -3,6 +3,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const server_port = process.env.SERVER_PORT || '6080'
 module.exports = {
   outputDir: "./dist",
+  assetsDir: "static",
   publicPath: "/",
   productionSourceMap: false,
   runtimeCompiler: true,
@@ -12,12 +13,12 @@ module.exports = {
       template: 'public/index.html',
       filename: 'index.html',
       title: "gitbook",
-    }
+    },
   },
   configureWebpack: {
     plugins: [new CopyWebpackPlugin([{
       from: path.resolve(__dirname, './public'),
-      to: path.resolve(__dirname, './dist'),
+      to: path.resolve(__dirname, './dist/static'),
       ignore: ['.*']
     }])]
   },

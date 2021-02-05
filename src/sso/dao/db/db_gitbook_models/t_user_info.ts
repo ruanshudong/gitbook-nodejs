@@ -13,6 +13,9 @@ export default class tUserInfo extends Model {
   @Column({ type: DataType.STRING, field: "f_password" })
   public password!: string
 
+  @Column({ type: DataType.TINYINT, field: "f_activited" })
+  public activited!: number
+  
   @Index({ name: "idx_create_time" })
   @Column({ type: DataType.DATE, field: "f_create_time" })
   public create_time!: Date
