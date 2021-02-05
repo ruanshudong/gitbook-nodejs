@@ -21,7 +21,7 @@ const webConf = {
 
 if (process.env.NODE_ENV == 'doc') {
     webConf.respository.repo = 'http://gitlab.whup.com/up-document/docs.git';
-    webConf.respository.cloneOnStart = false;
+    webConf.respository.cloneOnStart = true;
     webConf.webConf.title = '优品科技';
 }
 

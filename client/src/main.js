@@ -14,6 +14,8 @@ import vueResource from "vue-resource";
 
 import {i18n, loadLang} from './locale/i18n'
 
+
+
 Vue.config.productionTip = false;
 
 Vue.use(vueResource);
