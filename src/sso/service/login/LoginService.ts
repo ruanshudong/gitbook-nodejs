@@ -3,25 +3,29 @@ import bcrypt from 'bcrypt-nodejs';
 import jwt from 'jsonwebtoken';
 import ms from 'ms';
 import webConf from '../../../config/webConf';
-let secret = "d2DJ2#)84nD)92%1";
+import nodemailer from "nodemailer";
 
-const expireTime : number = 7 * 24 *60 * 60 * 1000;
+const secret = "d2DJ2#)84nD)92%1";
+
+const expireTimeRegister : number = 7 * 24 *60 * 60 * 1000;
+const expireTimeForget: number = 1 * 24 * 60 * 60 * 1000;
 
 export default class LoginService {
 
     private static _loginDao: LoginDao = new LoginDao(webConf.dbConf);
 
-    // public constructor(config: any) {
-
-    //     this._loginDao = new LoginDao(config);
-    // }
+    private static _transporter = null;
 
     //登录操作
     public static async login(uid: string, password: string) {
 
-        let userInfo = await this._loginDao.getUserInfoByUid(uid);
+        const userInfo = await this._loginDao.getUserInfoByUid(uid);
 
         if (userInfo) {
+            if (!userInfo.activated) {
+                return { errMsg: '#login.notActivated#' };
+            }
+
             //todo
             if (!bcrypt.compareSync(password, userInfo.password)) {
                 return { errMsg: '#login.passwordNoCorrect#' };
@@ -31,40 +35,126 @@ export default class LoginService {
             return { errMsg: '#login.userNoExist#' };
         }
 
-        const ticket = this.signWebIDToken({ uid: uid }, expireTime);
+        const ticket = await this.signWebIDToken({ uid: uid }, expireTimeRegister);
 
         return { ticket: ticket };
     }
 
+    protected static async sendEmail(uid: string, subject: string, title: string, html: string) {
 
+        if (!this._transporter) {
+            this._transporter = await nodemailer.createTransport(webConf.email.smtp);
+
+            // let info = await this._transporter.verify();
+        }
+
+        const info = await this._transporter.sendMail({
+            from: webConf.email.smtp.auth.user,
+            to: [uid],
+            subject: subject, 
+            text: title, 
+            html: html, 
+        });
+        
+        console.log("Message sent: ", info, uid);
+
+    }
     //注册操作
-    public static async register(uid: string, password: string, email: string) {
-        let userInfo = await this._loginDao.getUserInfoByUid(uid);
+    public static async register(host: string, uid: string, password: string) {
+
+        const userInfo = await this._loginDao.getUserInfoByUid(uid);
         if (userInfo) {
             return { errMsg: '#login.hasExist#' };
         } else {
-            await this._loginDao.insertUserInfo(uid, bcrypt.hashSync(password), email);
+
+            await this._loginDao.insertUserInfo(uid, bcrypt.hashSync(password));
+
+            const claims = {
+                uid
+            }
+            const token = await this.signWebIDToken(claims, expireTimeRegister);
+
+            this.sendEmail(uid, "激活账户", "注册", `<a href='${webConf.email.schema}${host}/sso.html#/activated?token=${token}'>点击激活您的账户</a>, 24h小时内有效`);
+
             return {};
         }
     }
 
+    public static async activated(host: string, token: string) {
+
+        const claims: any = await this.verifyWebIDToken(token);
+
+        if (claims.uid) {
+
+            const userInfo = await this._loginDao.getUserInfoByUid(claims.uid);
+            if (!userInfo) {
+                return { errMsg: '#login.notExist#' };
+            } 
+
+            if (userInfo.activated) {
+                return { errMsg: '#login.hasActivated#' };
+            }
+            
+            await this._loginDao.activated(claims.uid);
+
+        } else {
+            return { errMsg: '#login.activatedError#' };
+        }
+    }
+
+    
+    //找回密码
+    public static async forget(host: string, uid: string) {
+
+        const userInfo = await this._loginDao.getUserInfoByUid(uid);
+        if (!userInfo) {
+            return { errMsg: '#login.notExist#' };
+        } 
+
+        const claims = {
+            uid
+        }
+        const token = await this.signWebIDToken(claims, expireTimeForget);
+
+        this.sendEmail(uid, "找回密码", "找回密码", `<a href='${webConf.email.schema}${host}/sso.html#/resetPass?token=${token}'>点击重置密码</a>, 24h小时内有效`);
+
+        return {};
+        
+    }
+  
+    public static async resetPass(token: string, password: string) {
+
+        const claims : any = await this.verifyWebIDToken(token);
+
+        if (claims.uid) {
+
+            await this._loginDao.modifyPass(claims.uid, bcrypt.hashSync(password));
+
+        } else {
+            return { errMsg: '#login.resetPassError#' };
+        }
+
+        return {};
+
+    }
+    
     //注册操作
     public static async modifyPass(uid: string, password: string) {
 
         await this._loginDao.modifyPass(uid, bcrypt.hashSync(password));
         return {};
-    };
+    }
 
     public static async getUidByTicket(ticket: string) {
 
-        let data : any = await this.verifyWebIDToken(ticket);
+        const data : any = await this.verifyWebIDToken(ticket);
 
         return data.uid;
     }
 
     public static async getUserInfoByTicket(ticket: string) {
 
-        let data: any = await this.verifyWebIDToken(ticket);
+        const data: any = await this.verifyWebIDToken(ticket);
 
         if (data.uid) {
             return await this._loginDao.getUserInfoByUid(data.uid);
@@ -73,7 +163,7 @@ export default class LoginService {
     }
 
     public static async validate(pUid: string, pTicket: string) {
-        let uid = await this.getUidByTicket(pTicket);
+        const uid = await this.getUidByTicket(pTicket);
         if (uid && uid === pUid) {
             return true;
         } else {
@@ -87,7 +177,7 @@ export default class LoginService {
         if (!claims.uid) {
             return null
         }
-        let options = {
+        const options = {
             expiresIn: ms(expireTime)
         }
         return jwt.sign(claims, secret, options);
@@ -96,7 +186,7 @@ export default class LoginService {
     // 用户请求，验证cookie里的token是否有效
     protected static async verifyWebIDToken(id_token: string) {
         // 解析id_token拿到签名算法和key，并验证该id_token是否有效
-        return new Promise(async (resolve, reject) => {
+        return new Promise( (resolve, reject) => {
             jwt.verify(id_token, secret, function (err: any, claims: any) {
                 if (err) {
                     // verify 3种错误：
@@ -122,81 +212,3 @@ export default class LoginService {
         })
     }
 }
-
-
-// //重启服务的时候，从数据库清理掉已经过期的数据
-// LoginServer.removeExpiresTgt = async()=> {
-//     return await LoginDao.deleteTgtByExpireTime(new Date());
-// };
-
-// //从数据库获取缓存TGT数据
-// LoginServer.initLoginTgtCache = async() => {
-//     let tgtMap = {};
-//     let tgts = await LoginDao.getAllTgt();
-//     tgts.forEach((tgt)=> {
-//         tgt = tgt.dataValues;
-//         tgtMap[tgt.ticket] = {uid: tgt.uid, expireTime: tgt.expire_time};
-//     });
-
-//     tgts = await TokenDao.getAllToken();
-//     tgts.forEach((tgt)=> {
-//         tgt = tgt.dataValues;
-//         tgtMap[tgt.ticket] = {uid: tgt.uid, expireTime: tgt.expire_time};
-//     });
-//     cache.del('tgtMap');
-//     cache.put('tgtMap', tgtMap, 1 * 60 * 1000, ()=> {
-//         LoginServer.removeExpiresTgt();
-//         LoginServer.initLoginTgtCache();
-//     });
-// };
-
-// LoginServer.getUidByTicket = async(ticket) => {
-
-//     let tgtMap = cache.get('tgtMap') || {};
-//     let tgt = tgtMap[ticket];
-
-//     if (!tgt) {
-//         let tgtInDb = await LoginDao.getTgtByTicket(ticket);
-
-//         // console.log(tgtInDb);
-
-//         if (tgtInDb) {
-//             tgtInDb = tgtInDb.dataValues;
-//             tgt = tgtMap[ticket] = {uid: tgtInDb.uid, expireTime: tgtInDb.expire_time};
-//         } else {
-//             let token = await TokenDao.getToken(ticket);
-
-//             if(token) {
-//                 tgt = tgtMap[ticket] = {uid: token.uid, expireTime: token.expire_time}; 
-//             }
-//         }
-//     }
-//     if (tgt) {
-//         if (new Date().getTime() - new Date(tgt.expire_time).getTime() > 0) {
-//             delete tgtMap[ticket];
-//             LoginDao.deleteTgt(ticket);
-//             return null
-//         } else {
-//             return tgt.uid;
-//         }
-//     } else {
-//         return null;
-//     }
-// };
-
-
-// LoginServer.validate = async(pUid, pTicket) => {
-//     let uid = await LoginServer.getUidByTicket(pTicket);
-//     if (uid && uid === pUid) {
-//         return true;
-//     } else {
-//         return false;
-//     }
-// };
-
-// LoginServer.removeExpiresTgt();
-// LoginServer.initLoginTgtCache();
-
-// }
-
-// module.exports = LoginServer;

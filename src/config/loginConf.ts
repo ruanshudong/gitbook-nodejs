@@ -7,7 +7,7 @@ import LoginService from "../sso/service/login/LoginService";
  */
 const loginConf = {
     redirectUrlParamName: "redirect_url",    //跳转到登录url的时带的原url参数名，如：***/login?service=***，默认是service
-    loginUrl:"/index.html#/login",
+    loginUrl:"/sso.html#/login",
     logoutUrl: "",
     logoutredirectUrlParamName: "url",
     cookieDomain: "",              //cookie值对应的域
@@ -16,7 +16,7 @@ const loginConf = {
     validateMatch: [
         ["data.result", true]
     ],                                  //校验通过匹配条件，可以从多层结果，多个情况
-    ignore: ['/static', '/pages/api/get_locale', '/index.html', '/pages/sso/isLogin'],           //不需要登录校验的路径
+    ignore: ['/static', '/pages/api/get_locale', '/sso.html', '/pages/sso'],           //不需要登录校验的路径
     apiPrefix: ["/pages/api"],          //接口相应的路径前缀，这类接口访问不直接跳转到登录界面，而只是提示未登录
     apiNotLoginMes: "common.noLogin",   //接口无登录权限的提示语
 };
@@ -26,10 +26,7 @@ const loginConf = {
  * @param ctx
  */
 async function getUidByTicket(ctx: Koa.Context, ticket: string) {
-    // console.log("getUidByTicket:", ticket);
-    let userInfo = await LoginService.getUserInfoByTicket(ticket);
-
-    // logger.debug("getUidByTicket", ticket, userInfo);
+    const userInfo = await LoginService.getUserInfoByTicket(ticket);
 
     if (userInfo) {
         return userInfo.uid;
@@ -47,15 +44,11 @@ async function validate(ctx: Koa.Context, ticket: string) {
         return null;
     }
 
-    let userInfo = await LoginService.getUserInfoByTicket(ticket);
-
-    // logger.debug("validate", uid, ticket, userInfo);
+    const userInfo = await LoginService.getUserInfoByTicket(ticket);
 
     if (userInfo) { 
         return userInfo.uid;
     }
-
-    // logger.debug("validate failed", uid, ticket);
 
     return null;
 }

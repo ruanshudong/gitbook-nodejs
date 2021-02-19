@@ -31,7 +31,10 @@ export default function ssoMiddleware(loginConf: any) {
         let ticket = "";
         let uid = "";
         const ticketFromQuery = ctx.query["ticket"];
-        if (ticket = ticketFromQuery) {
+
+        if (ticketFromQuery) {
+          ticket = ticketFromQuery;
+
           uid = await loginConf.getUidByTicket(ctx, ticket);
           if (uid) {
             await ctx.cookies.set("ticket", ticket, cookieConfig);
@@ -39,14 +42,9 @@ export default function ssoMiddleware(loginConf: any) {
           }
         }
 
-        // if (!uid) {
-        //   uid = ctx.cookies.get("uid") || "";
-        // }
         if (!ticket) {
           ticket = ctx.cookies.get("ticket") || "";
         }
-
-        console.log(uid, ticket);
 
         if (ticket) {
           ctx.uid = await loginConf.validate(ctx, ticket);
@@ -123,4 +121,4 @@ export default function ssoMiddleware(loginConf: any) {
       ctx.redirect(`${ctx.protocol}://${ctx.host}`);
     }
   }
-};
+}

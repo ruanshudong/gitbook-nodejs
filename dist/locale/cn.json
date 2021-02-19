@@ -1,4 +1,43 @@
 {
   "localeCode": "cn",
-  "localeName": "中文"
+  "localeName": "中文",
+  "login": {
+    "loginTitle": "请登录",
+    "userName": "邮箱",
+    "password": "密码",
+    "repeatPassword": "二次确认密码",
+    "login": "登录",
+    "toRegisterPage": "没有账号？前往注册",
+    "toLoginPage": "直接前往登录",
+    "userNameTips": "邮箱不能为空",
+    "userNameRegTips": "请输入合法的邮箱地址",
+    "passwordTips": "密码不能为空",
+    "passwordNoCorrect": "密码错误",
+    "userNoExist": "用户名不存在",
+    "loginFailed": "登录失败",
+    "registerTitle": "请注册",
+    "repeatPasswordTips": "二次确认密码不能为空",
+    "register": "注册",
+    "passwordDiff": "两次密码输入不一致，请修改",
+    "hasExist": "用户名已存在",
+    "registerSucc": "注册成功",
+    "registerFailed": "注册失败",
+    "getUidFailed": "获取用户信息失败",
+    "logout": "退出登录",
+    "noLogin": "您还没有登录",
+    "captcha": "验证码"
+  },
+  "common": {
+    "noLogin": "您还没有登录",
+    "success": "成功",
+    "failed": "失败",
+    "confirmTitle": "系统提示",
+    "systemError": "系统内部错误",
+    "noPrivilage": "没有权限",
+    "notEmpty": "不能为空",
+    "needNumber": "必须为数字",
+    "needArray": "必须为数组",
+    "needObject": "必须为对象",
+    "needBoolean": "必须为布尔值"
+  }
 }

@@ -14,6 +14,12 @@ module.exports = {
       filename: 'index.html',
       title: "gitbook",
     },
+    sso: {
+      entry: 'src/sso.js',
+      template: 'public/index.html',
+      filename: 'sso.html',
+      title: "gitbook",
+    },
   },
   configureWebpack: {
     plugins: [new CopyWebpackPlugin([{

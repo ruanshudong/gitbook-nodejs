@@ -1,10 +1,11 @@
 
 
-import _ from "lodash";
-import { Sequelize, Table, Column, Model } from "sequelize-typescript";
+// import _ from "lodash";
+// import fs from 'fs-extra';
+
+import { Sequelize } from "sequelize-typescript";
 
 import tUserInfo from "./db_gitbook_models/t_user_info";
-
 class DbManager {
 
     private _sequelize: Sequelize;
@@ -24,7 +25,9 @@ class DbManager {
             },
         });
 
-        s.query(`CREATE DATABASE IF NOT EXISTS \`${config.database}\`;`).then(()=> {
+        s.query(`CREATE DATABASE IF NOT EXISTS ${config.database};`).then(()=> {
+
+            // console.log('---------');
 
             //初始化sequelize
             this._sequelize = new Sequelize(config.database, config.user, config.password, {
@@ -35,7 +38,7 @@ class DbManager {
                     charset: config.charset
                 },
                 logging(sqlText) {
-                    // console.debug(sqlText);
+                    console.debug(sqlText);
                     // logger.debug(sqlText);
                 },
                 pool: {
@@ -45,7 +48,7 @@ class DbManager {
                 },
                 modelPaths: [__dirname + "/" + config.database + "_models"],
                 timezone: (() => {
-                    let timezone = String(0 - new Date().getTimezoneOffset() / 60);
+                    const timezone = String(0 - new Date().getTimezoneOffset() / 60);
                     return "+" + (timezone.length < 2 ? ("0" + timezone) : timezone) + ":00";
                 })()  //获取当前时区并做转换
             });
@@ -53,9 +56,12 @@ class DbManager {
             this._sequelize.authenticate().then(() => {
                 console.log("Connection has been established successfully.");
             });
+
+            this._sequelize.models.tUserInfo.sync({ alter: true });
         })
     }
 }
 
 export { DbManager, tUserInfo };
+
 

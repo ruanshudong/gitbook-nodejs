@@ -18,120 +18,84 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var koa_1 = __importDefault(require("koa"));
-var path = __importStar(require("path"));
-var fs_extra_1 = __importDefault(require("fs-extra"));
-var koa_bodyparser_1 = __importDefault(require("koa-bodyparser"));
-var koa_static_1 = __importDefault(require("koa-static"));
-var koa_helmet_1 = __importDefault(require("koa-helmet"));
-var git_clone_1 = __importDefault(require("git-clone"));
-var router_1 = require("./app/router");
-var webConf_1 = __importDefault(require("./config/webConf"));
-var TreeController_1 = __importDefault(require("./app/controller/TreeController"));
-var app = new koa_1.default();
+const koa_1 = __importDefault(require("koa"));
+const path = __importStar(require("path"));
+const fs_extra_1 = __importDefault(require("fs-extra"));
+const koa_bodyparser_1 = __importDefault(require("koa-bodyparser"));
+const koa_static_1 = __importDefault(require("koa-static"));
+const koa_session_1 = __importDefault(require("koa-session"));
+const koa_helmet_1 = __importDefault(require("koa-helmet"));
+const git_clone_1 = __importDefault(require("git-clone"));
+const midware_1 = require("./midware");
+// import { pageRouter, apiRouter } from "./midware";
+const webConf_1 = __importDefault(require("./config/webConf"));
+const TreeController_1 = __importDefault(require("./app/controller/TreeController"));
+const loginConf_1 = __importDefault(require("./config/loginConf"));
+const ssoMidware_1 = __importDefault(require("./midware/ssoMidware"));
+const app = new koa_1.default();
 //信任proxy头部，支持 X-Forwarded-Host
 app.proxy = true;
 // error handler
 // onerror(app);
+//验证码
+const CONFIG = {
+    key: 'koa:sess',
+    maxAge: 1000 * 60 * 60 * 12,
+    autoCommit: true,
+    overwrite: true,
+    httpOnly: true,
+    signed: true,
+    rolling: false,
+    renew: false,
+};
+app.keys = ['sessionCaptcha'];
+app.use(koa_session_1.default(CONFIG, app));
 //安全防护
 app.use(koa_helmet_1.default());
 app.use(koa_bodyparser_1.default());
+app.use(ssoMidware_1.default(loginConf_1.default));
 app.use(koa_static_1.default(path.join(__dirname, "../client/dist"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
 app.use(koa_static_1.default(path.join(__dirname, "../client/markdown"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
-app.use(router_1.pageRouter.routes());
-app.use(router_1.apiRouter.routes());
-var hostname = process.env.IP || "0.0.0.0";
-var port = process.env.PORT || 6080;
-app.listen(port, hostname, function () {
-    console.log("server listening at " + hostname + ":" + port);
+app.use(midware_1.pageRouter.routes());
+app.use(midware_1.apiRouter.routes());
+app.use(midware_1.ssoRouter.routes());
+const hostname = process.env.IP || "0.0.0.0";
+const port = process.env.PORT || 6080;
+app.listen(port, hostname, () => {
+    console.log(`server listening at ${hostname}:${port}`);
 });
-var cloning = false;
-var doClone = function () { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (cloning) {
-                    return [2 /*return*/];
-                }
-                console.log("cloneing " + webConf_1.default.respository.repo + " => " + webConf_1.default.respository.path);
-                cloning = true;
-                return [4 /*yield*/, fs_extra_1.default.remove(webConf_1.default.respository.tmpPath)];
-            case 1:
-                _a.sent();
-                git_clone_1.default(webConf_1.default.respository.repo, webConf_1.default.respository.tmpPath, null, function (e) { return __awaiter(void 0, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                if (!!e) return [3 /*break*/, 3];
-                                //clone succ
-                                fs_extra_1.default.moveSync(webConf_1.default.respository.path, webConf_1.default.respository.path + ".bak");
-                                fs_extra_1.default.moveSync(webConf_1.default.respository.tmpPath, webConf_1.default.respository.path);
-                                return [4 /*yield*/, fs_extra_1.default.remove(webConf_1.default.respository.tmpPath)];
-                            case 1:
-                                _a.sent();
-                                return [4 /*yield*/, fs_extra_1.default.remove(webConf_1.default.respository.path + ".bak")];
-                            case 2:
-                                _a.sent();
-                                TreeController_1.default.loadTree();
-                                console.log("cloneing " + webConf_1.default.respository.repo + " => " + webConf_1.default.respository.path + " succ");
-                                return [3 /*break*/, 4];
-                            case 3:
-                                console.log("cloneing error: ", e);
-                                _a.label = 4;
-                            case 4:
-                                cloning = false;
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                return [2 /*return*/];
+let cloning = false;
+const doClone = async () => {
+    if (cloning) {
+        return;
+    }
+    console.log(`cloneing ${webConf_1.default.respository.repo} => ${webConf_1.default.respository.path}`);
+    cloning = true;
+    await fs_extra_1.default.remove(webConf_1.default.respository.tmpPath);
+    git_clone_1.default(webConf_1.default.respository.repo, webConf_1.default.respository.tmpPath, null, async (e) => {
+        if (!e) {
+            //clone succ
+            fs_extra_1.default.moveSync(webConf_1.default.respository.path, webConf_1.default.respository.path + ".bak");
+            fs_extra_1.default.moveSync(webConf_1.default.respository.tmpPath, webConf_1.default.respository.path);
+            await fs_extra_1.default.remove(webConf_1.default.respository.tmpPath);
+            await fs_extra_1.default.remove(webConf_1.default.respository.path + ".bak");
+            TreeController_1.default.loadTree();
+            console.log(`cloneing ${webConf_1.default.respository.repo} => ${webConf_1.default.respository.path} succ`);
         }
+        else {
+            console.log(`cloneing error: `, e);
+        }
+        cloning = false;
     });
-}); };
+};
 if (webConf_1.default.respository.cloneOnStart) {
     doClone();
 }
-setInterval(function () {
+setInterval(() => {
     console.log('setInterval', webConf_1.default.respository.interval);
     doClone();
 }, webConf_1.default.respository.interval);

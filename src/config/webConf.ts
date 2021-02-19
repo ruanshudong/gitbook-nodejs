@@ -11,6 +11,18 @@ const webConf = {
         title: 'Manual',
     },
     enableLogin: false,
+    email: {
+        smtp: {
+            host: 'smtp.exmail.qq.com',
+            port: 465,
+            secure: true,
+            auth: {
+                user: 'jarodruan@upchina.com',
+                pass: 'Lucky8066',
+            }
+        },
+        schema: 'http://'
+    },
     dbConf: {
         database: "db_gitbook",
         host: "127.0.0.1",
@@ -35,7 +47,7 @@ const webConf = {
 
 if (process.env.NODE_ENV == 'doc') {
     webConf.respository.repo = 'http://gitlab.whup.com/up-document/docs.git';
-    webConf.respository.cloneOnStart = true;
+    webConf.respository.cloneOnStart = false;
     webConf.webConf.title = '优品科技';
 
     webConf.dbConf = {

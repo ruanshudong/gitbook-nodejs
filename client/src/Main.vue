@@ -22,12 +22,11 @@ export default {
       this.$ajax.getJSON("/sso/isLogin")
         .then((data) => {
           if(!data.login) {
-            location.hash=data.hash;
+            location.href=data.href;
           }
         })
         .catch((err) => {
-          location.hash='/login';
-          // location.href="/login.html";
+          location.href='/sso.html#/login';
         });
     },
   },

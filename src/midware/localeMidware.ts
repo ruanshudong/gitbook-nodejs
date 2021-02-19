@@ -9,11 +9,11 @@ import _ from "lodash";
 
 const localeMap: any = {};
 
-const fileNames = fs.readdirSync(path.join(__dirname, "../../locale"));
+const fileNames = fs.readdirSync(path.join(__dirname, "../locale"));
 
 fileNames.forEach((fileName) => {
 
-    import(path.join(__dirname, "../../locale/", fileName)).then((content) => {
+    import(path.join(__dirname, "../locale/", fileName)).then((content) => {
         localeMap[content.localeCode] = formatJson(content);
     });
 });
@@ -39,7 +39,8 @@ function formatJson(localeJson: any) {
 
 export default async function LocaleMidware(ctx: Koa.Context, next: Koa.Next) {
     await next();
-    if (!ctx.body) {
+
+    if (ctx.body) {
         const lan = ctx.paramsObj && ctx.paramsObj.__locale || ctx.cookies.get("locale") || "cn";
         let content = "";
         let contentType = "";
@@ -52,8 +53,12 @@ export default async function LocaleMidware(ctx: Koa.Context, next: Koa.Next) {
         } else {
             return;
         }
+
         const matchList = content.match(/#[a-zA-Z0-9._]+#/g);
+
         _.each(matchList, (matchStr: any) => {
+
+            console.log(matchStr);
             const str = localeMap[lan][matchStr];
             if (str) {
                 content = content.replace(matchStr, str);
