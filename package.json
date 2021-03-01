@@ -8,7 +8,7 @@
     "dev": "cross-env NODE_ENV=tars ./node_modules/.bin/nodemon --exec ./node_modules/.bin/ts-node ./src/bin/www.ts --watch ./src -e ts,tsx ",
     "doc": "cross-env NODE_ENV=doc ./node_modules/.bin/nodemon --exec ./node_modules/.bin/ts-node ./src/bin/www.ts --watch ./src -e ts,tsx ",
     "build": "npm run eslint && tsc; cp -rf ./src/config/*.json dist/config/; cp -rf ./src/locale dist",
-    "docker": "docker build . -t gitbook",
+    "docker": "docker build . -t tarscloud/gitbook",
     "eslint": "./node_modules/.bin/eslint src --ext .ts",
     "start": "node dist/bin/www.js",
     "tar": "sh package.sh",

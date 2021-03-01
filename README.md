@@ -48,8 +48,11 @@ npm run prd
 # Docker发布
 可以编译成docker来发布
 ```sh
+
 npm run docker
 docker run -p 80:6080 -v /data/doc:/root/gitbook/client/markdown gitbook
+docker run -e CLONE_ON_START=true -p 8080:6080 -v /data/gitbook:/root/gitbook/client/markdown gitbook
+
 ```
 
 # 关于搜索
