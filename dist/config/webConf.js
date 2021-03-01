@@ -10,7 +10,7 @@ const webConf = {
         loggerPath: path_1.default.join(__dirname, "../log"),
         logFileKeepDays: "1",
         defaultLanguage: "cn",
-        title: 'Manual',
+        title: '优品科技文档',
     },
     enableLogin: false,
     email: {
@@ -19,49 +19,22 @@ const webConf = {
             port: 465,
             secure: true,
             auth: {
-                user: 'jarodruan@upchina.com',
-                pass: 'Lucky8066',
+                user: 'gitbook@upchina.com',
+                pass: 'Up@987654',
             }
         },
-        schema: 'http://'
-    },
-    dbConf: {
-        database: "db_gitbook",
-        host: "127.0.0.1",
-        port: "3306",
-        user: "root",
-        password: "12345",
-        charset: "utf8mb4",
-        pool: {
-            max: 10,
-            min: 0,
-            idle: 10000
-        }
+        schema: 'http://',
+        ignoreEmail: ['qq.com', '163.com', 'gmail.com', 'sina.com', 'foxmail.com', 'sohu.com', 'outlook.com', 'tom.com', 'sogou.com', '21cn.com', '189.com', 'yahoo.com', 'aol.com']
     },
     respository: {
-        repo: 'https://github.com/TarsCloud/TarsDocs',
         tmpPath: path_1.default.join(__dirname, "../../client/tmp"),
-        path: path_1.default.join(__dirname, "../../client/markdown"),
+    },
+    config: {
+        dbConf: null,
+        path: null,
+        repo: '',
         interval: 3600 * 1000,
-        cloneOnStart: true
+        cloneOnStart: false,
     }
 };
-if (process.env.NODE_ENV == 'doc') {
-    webConf.respository.repo = 'http://gitlab.whup.com/up-document/docs.git';
-    webConf.respository.cloneOnStart = true;
-    webConf.webConf.title = '优品科技';
-    webConf.dbConf = {
-        database: "db_gitbook",
-        host: '172.16.8.247',
-        port: '3306',
-        user: 'tafadmin',
-        password: 'tafadmin2017',
-        charset: 'utf8mb4',
-        pool: {
-            max: 10,
-            min: 0,
-            idle: 10000 // 如果一个线程 10 秒钟内没有被使用过的话，那么就释放线程
-        }
-    };
-}
 exports.default = webConf;

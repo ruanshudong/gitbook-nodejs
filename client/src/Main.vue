@@ -1,7 +1,8 @@
 <template>
-  <div id="app">
+  <div id="app" >
     <el-container >
-     <router-view style="height:100%"></router-view>
+     <router-view style="height:100%">
+     </router-view>
     </el-container>
   </div>
 </template>
@@ -17,23 +18,24 @@ export default {
   },
   methods: {
     
-    checkLogin() {
+    async checkLogin() {
+      try {
 
-      this.$ajax.getJSON("/sso/isLogin")
-        .then((data) => {
-          if(!data.login) {
-            location.href=data.href;
-          }
-        })
-        .catch((err) => {
-          location.href='/sso.html#/login';
-        });
+        const data = await this.$ajax.getJSON("/sso/isLogin");
+
+        if(!data.login) {
+          location.href=data.href;
+        }
+      }catch(err) {
+        console.log(err);
+        // location.href='/sso.html#/login';
+      };
     },
   },
   created() {
-    this.checkLogin();
   },
-  mounted() {
+  async mounted() {
+    await this.checkLogin();
   },
 }
 

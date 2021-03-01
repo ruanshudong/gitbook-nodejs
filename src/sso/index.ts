@@ -12,20 +12,11 @@ const ssoConf: Array<confType> = [
     ['post', '/login', LoginController, LoginController.login, { uid: 'notEmpty', password: 'notEmpty', captcha: 'notEmpty' }],
     ['post', '/activated', LoginController, LoginController.activated, { token: 'notEmpty' }],
     
-    ['get', '/logout', LoginController, LoginController.logout],
-
     ['get', '/getUidByTicket', LoginController, LoginController.getUidByTicket],
-    ['get', '/validate', LoginController, LoginController.validate],
     
     ['get', '/getLoginUid', LoginController, LoginController.getLoginUid],
     ['get', '/isLogin', LoginController, LoginController.isLogin],
     ['get', '/isEnableLogin', LoginController, LoginController.isEnableLogin],
-
-    // ['post', '/ModifyPass', DemoUserController.adminModifyPass],
-    // ['get', '/isAdmin', DemoAuthController.isAdmin],
-
-    // 是否启用LDAP
-    // ['get', '/isEnableLdap', DemoLdapController.isEnableLdap],
 
     //需要登录
     ['post', '/modifyPass', LoginController, LoginController.modifyPass]

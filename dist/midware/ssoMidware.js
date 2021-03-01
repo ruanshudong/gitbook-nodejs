@@ -22,49 +22,55 @@ function ssoMiddleware(loginConf) {
             toLogoutPage(ctx);
         }
         else {
-            if (isInPath(ctx, loginConf.ignore || [])) {
-                await next();
+            // if (isInPath(ctx, loginConf.ignore || [])) { 
+            //   await next();
+            // }
+            // else {
+            let ticket = "";
+            let uid = "";
+            const ticketFromQuery = ctx.query["ticket"];
+            if (ticketFromQuery) {
+                ticket = ticketFromQuery;
+                uid = await loginConf.getUidByTicket(ctx, ticket);
+                if (uid) {
+                    await ctx.cookies.set("ticket", ticket, cookieConfig);
+                    await ctx.cookies.set("uid", uid, cookieConfig);
+                }
+            }
+            if (!ticket) {
+                ticket = ctx.cookies.get("ticket") || "";
+            }
+            if (ticket) {
+                ctx.uid = await loginConf.validate(ctx, ticket);
             }
             else {
-                let ticket = "";
-                let uid = "";
-                const ticketFromQuery = ctx.query["ticket"];
+                ctx.uid = null;
+            }
+            if (ctx.uid) {
                 if (ticketFromQuery) {
-                    ticket = ticketFromQuery;
-                    uid = await loginConf.getUidByTicket(ctx, ticket);
-                    if (uid) {
-                        await ctx.cookies.set("ticket", ticket, cookieConfig);
-                        await ctx.cookies.set("uid", uid, cookieConfig);
-                    }
-                }
-                if (!ticket) {
-                    ticket = ctx.cookies.get("ticket") || "";
-                }
-                if (ticket) {
-                    ctx.uid = await loginConf.validate(ctx, ticket);
+                    //从页面过来的
+                    const urlObj = url_1.default.parse(ctx.request.url, true);
+                    delete (urlObj.query["ticket"]);
+                    delete (urlObj.search);
+                    const redirectUrl = url_1.default.format(urlObj);
+                    ctx.redirect(redirectUrl);
                 }
                 else {
-                    ctx.uid = null;
+                    //从cookie过来的请求
+                    await next();
                 }
-                if (ctx.uid) {
-                    if (ticketFromQuery) {
-                        //从页面过来的
-                        const urlObj = url_1.default.parse(ctx.request.url, true);
-                        delete (urlObj.query["ticket"]);
-                        delete (urlObj.search);
-                        const redirectUrl = url_1.default.format(urlObj);
-                        ctx.redirect(redirectUrl);
-                    }
-                    else {
-                        //从cookie过来的请求
-                        await next();
-                    }
+            }
+            else {
+                if (isInPath(ctx, loginConf.mustLogin || [])) {
+                    ctx.body = { ret_code: 500, err_msg: loginConf.apiNotLoginMes, data: {} };
+                }
+                else if (isInPath(ctx, loginConf.ignore || [])) {
+                    await next();
                 }
                 else if (isInPath(ctx, loginConf.apiPrefix)) {
                     ctx.body = { ret_code: 500, err_msg: loginConf.apiNotLoginMes, data: {} };
                 }
                 else {
-                    console.log('------toLoginPage');
                     toLoginPage(ctx);
                 }
             }
@@ -107,7 +113,7 @@ function ssoMiddleware(loginConf) {
             }
         }
         else {
-            ctx.redirect(`${ctx.protocol}://${ctx.host}`);
+            ctx.redirect(`/`);
         }
     }
 }

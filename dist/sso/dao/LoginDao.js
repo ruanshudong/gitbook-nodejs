@@ -28,7 +28,7 @@ class LoginDao {
         return await db_1.tUserInfo.create({
             uid: uid,
             password: password,
-            activited: false,
+            activated: false,
             create_time: new Date(),
             update_time: new Date()
         });
@@ -42,7 +42,19 @@ class LoginDao {
     }
     async modifyPass(uid, password) {
         return await db_1.tUserInfo.update({
-            password: password
+            password: password,
+            activated: true,
+            update_time: new Date()
+        }, {
+            where: {
+                uid: uid
+            }
+        });
+    }
+    async activated(uid) {
+        return await db_1.tUserInfo.update({
+            activated: true,
+            update_time: new Date()
         }, {
             where: {
                 uid: uid

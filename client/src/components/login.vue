@@ -1,8 +1,9 @@
 <template>
   <div>
+     <img class="logo" src="/static/images/logo_white.png">
     <!-- 登录 -->
-    <el-card class="box-card" v-show="showLogin">
-      <h1>{{ msg }}登录优品文档</h1>
+    <el-card  class="box-card" v-show="1">
+      <h1>登 录</h1>
       <el-form
         label-width="0"
         ref="ruleFormLogin"
@@ -12,14 +13,14 @@
         <el-form-item prop="uid">
           <el-input
             v-model="data.uid"
-            placeholder="邮箱"
-            prefix-icon="el-icon-user"
+            placeholder="用户邮箱"
+            prefix-icon="el-icon-message"
           >
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input
-            placeholder="密码"
+            placeholder="输入密码"
             v-model="data.password"
             show-password
             prefix-icon="el-icon-key"
@@ -29,6 +30,7 @@
         <el-form-item required>
           <div class="captcha_box">
             <el-input
+            prefix-icon="el-icon-finished"            
               type="text"
               :placeholder="$t('login.captcha')"
               v-model="data.captcha"
@@ -40,15 +42,18 @@
           </div>
         </el-form-item>
 
-        <el-button size="small" round @click="show_registry">注 册</el-button>
-        <el-button type="primary" size="small" round @click="login">登 录</el-button>
-        <el-button size="small" style="float:right" round @click="forget_pass">找回密码</el-button>
+    
+        <el-button type="primary" size="small" round @click="login" class="btn_long">登 录</el-button>
+        <div class="sub_menu">
+          <a size="small" style="float:right" round @click="forget_pass">找回密码</a>
+          <a size="small" round @click="show_registry">注 册</a>
+        </div>
       </el-form>
     </el-card>
 
     <!-- 注册 -->
     <el-card class="box-card" v-show="showRegistry">
-      <h1>{{ msg }}注册为新用户</h1>
+      <h1>注 册</h1>
       <el-form
         label-width="80px"
         :model="data"
@@ -57,24 +62,26 @@
         :rules="rules"
       >
         <el-form-item label="邮箱" prop="uid" required>
-          <el-input v-model="data.uid" placeholder="请输入邮箱"></el-input>
+          <el-input v-model="data.uid" placeholder="请输入邮箱"  prefix-icon="el-icon-message" ></el-input>
         </el-form-item>
         <el-form-item label="设置密码" prop="password">
           <el-input
-            placeholder="长度在 6 到 16 个字符"
+             prefix-icon="el-icon-key"
+            placeholder="必须为6到16个字符"
             v-model="data.password"
             show-password
           ></el-input>
         </el-form-item>
-        <el-form-item label="重复密码" prop="checkPass">
+        <el-form-item label="重复密码" prop="checkPass"  required>
           <el-input
-            placeholder="请重复输入密码"
+            prefix-icon="el-icon-key"
+            placeholder="请重复上面的密码"
             v-model="data.checkPass"
             show-password
           ></el-input>
-        </el-form-item>
-        <el-button size="small" round @click="show_login">返 回</el-button>
-        <el-button type="primary" size="small" round @click="register">提 交</el-button>
+        </el-form-item>       
+        <el-button  class="btn_long"  type="primary" size="small" round @click="register">注 册</el-button>
+        <div class="sub_menu"> <a size="small" round @click="show_login">返 回</a></div>
       </el-form>
     </el-card>
 
@@ -89,16 +96,17 @@
         label-position="left"
         :rules="rules"
       >
-        <el-form-item label="邮箱" prop="uid" required>
-          <el-input v-model="data.uid" placeholder="请输入邮箱"></el-input>
+        <el-form-item label="邮箱" prop="uid" required >
+          <el-input v-model="data.uid" placeholder="请输入注册邮箱"  prefix-icon="el-icon-message"></el-input>
         </el-form-item>
-        <el-button size="small" round @click="show_login">返 回</el-button>
-        <el-button type="primary" size="small" round @click="forget">提 交</el-button>
+
+        <el-button class="btn_long" type="primary" size="small" round @click="forget">提 交</el-button>
+        <div class="sub_menu"><a size="small" round @click="show_login">返 回</a></div>
       </el-form>
     </el-card>
-  </div>
-</template>
 
+  <div class="copyright"> Copyright©2012-2021 优品科技管理股份有限公司 400-603-1846 版权所有 <a href="http://www.miitbeian.gov.cn" target="_blank">粤ICP备15103921号-3</a></div></div>  
+</template>
 <script>
 
 import sha1 from 'sha1';
@@ -117,7 +125,7 @@ export default {
     };
 
     var validateEmail = (rule, value, callback) => {
-      const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+      const mailReg = /^([a-zA-Z0-9._-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
       if (!value) {
         return callback(new Error("请输入合法的邮箱地址"));
       }
@@ -132,6 +140,7 @@ export default {
 
     return {
       msg: "欢迎",
+      activeName: 'first',
       data: {
         uid: "",
         captcha: "",
@@ -167,6 +176,9 @@ export default {
     };
   },
   methods: {
+     handleClick(tab, event) {
+        console.log(tab, event);
+      },
     reloadCaptcha() {
       this.captchaUrl = `/pages/sso/captcha?${Math.random()}`
     },
@@ -229,9 +241,13 @@ export default {
         if (valid) {
           this.$ajax.postJSON("/sso/register", {uid: this.data.uid, password: sha1(this.data.password)}).then(data=>{
             this.$message({
-              message: "恭喜你，验证邮件已经发送到邮箱，请激活后登录",
+              message: "恭喜你，验证邮件已经发送到邮箱，请激活后登录, 正在跳转到登录界面",
               type: "success",
             });
+
+            setTimeout(()=>{
+              location.href="/"; 
+            }, 3000);
           }).catch(err=>{
             this.$message({
               message: err.err_msg,
@@ -251,27 +267,3 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-.box-card {
-  width: 450px;
-  margin: 0 auto;
-}
-h1,
-h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-.captcha_box{display:flex;}
-.captcha_code{cursor:pointer;display:block;height:32px;margin-left:20px;}
-</style>

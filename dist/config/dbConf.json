@@ -1,0 +1,15 @@
+
+{
+    "database": "db_gitbook",
+    "host": "172.16.8.247",
+    "port": "3306",
+    "user": "tafadmin",
+    "password": "tafadmin2017",
+    "charset": "utf8mb4",
+    "pool": {
+        "max": 10,
+        "min": 0,
+        "idle": 10000
+    }
+}
+

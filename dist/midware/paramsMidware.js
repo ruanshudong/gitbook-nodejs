@@ -24,9 +24,9 @@ function paramsDealMidware(validParams) {
             result = result == undefined ? {} : result;
             ctx.body = { data: result, ret_code: retCode, err_msg: errMsg };
         };
-        ctx.makeMsgResObj = (ret) => {
-            ctx.body = { data: {}, ret_code: 500, err_msg: "common.error." + ret };
-        };
+        // ctx.makeMsgResObj = (ret: number) => {
+        //     ctx.body = { data: {}, ret_code: 500, err_msg: "common.error." + ret };
+        // };
         ctx.makeErrResObj = () => {
             ctx.body = { data: {}, ret_code: 500, err_msg: "common.systemError" };
         };

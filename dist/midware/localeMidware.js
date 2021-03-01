@@ -27,9 +27,9 @@ const stream_1 = __importDefault(require("stream"));
 const path = __importStar(require("path"));
 const lodash_1 = __importDefault(require("lodash"));
 const localeMap = {};
-const fileNames = fs.readdirSync(path.join(__dirname, "../../locale"));
+const fileNames = fs.readdirSync(path.join(__dirname, "../locale"));
 fileNames.forEach((fileName) => {
-    Promise.resolve().then(() => __importStar(require(path.join(__dirname, "../../locale/", fileName)))).then((content) => {
+    Promise.resolve().then(() => __importStar(require(path.join(__dirname, "../locale/", fileName)))).then((content) => {
         localeMap[content.localeCode] = formatJson(content);
     });
 });
@@ -52,7 +52,7 @@ function formatJson(localeJson) {
 }
 async function LocaleMidware(ctx, next) {
     await next();
-    if (!ctx.body) {
+    if (ctx.body) {
         const lan = ctx.paramsObj && ctx.paramsObj.__locale || ctx.cookies.get("locale") || "cn";
         let content = "";
         let contentType = "";
@@ -69,6 +69,7 @@ async function LocaleMidware(ctx, next) {
         }
         const matchList = content.match(/#[a-zA-Z0-9._]+#/g);
         lodash_1.default.each(matchList, (matchStr) => {
+            console.log(matchStr);
             const str = localeMap[lan][matchStr];
             if (str) {
                 content = content.replace(matchStr, str);

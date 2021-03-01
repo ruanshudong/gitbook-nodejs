@@ -23,9 +23,9 @@ __decorate([
     __metadata("design:type", String)
 ], tUserInfo.prototype, "password", void 0);
 __decorate([
-    sequelize_typescript_1.Column({ type: sequelize_typescript_1.DataType.TINYINT, field: "activited" }),
+    sequelize_typescript_1.Column({ type: sequelize_typescript_1.DataType.TINYINT, field: "activated" }),
     __metadata("design:type", Boolean)
-], tUserInfo.prototype, "activited", void 0);
+], tUserInfo.prototype, "activated", void 0);
 __decorate([
     sequelize_typescript_1.Index({ name: "idx_create_time" }),
     sequelize_typescript_1.Column({ type: sequelize_typescript_1.DataType.DATE, field: "create_time" }),

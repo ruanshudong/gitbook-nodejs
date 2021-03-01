@@ -49,6 +49,7 @@ export class LoginDao {
     public async modifyPass(uid: string, password: string) {
         return await tUserInfo.update({
             password: password,
+            activated: true,
             update_time: new Date()
         }, {
             where: {

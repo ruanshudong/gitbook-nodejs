@@ -6,11 +6,11 @@ import staticRouter from "koa-static";
 import session from 'koa-session';
 import helmet from "koa-helmet";
 import clone from 'git-clone';
+import TreeController from './app/controller/TreeController';
+import LoginService from './sso/service/login/LoginService';
 import { pageRouter, apiRouter, ssoRouter } from "./midware";
 
-// import { pageRouter, apiRouter } from "./midware";
 import webConf from './config/webConf'
-import TreeController from './app/controller/TreeController'
 
 import loginConf from "./config/loginConf";
 
@@ -47,61 +47,88 @@ app.use(bodyparser());
 
 //国际化多语言中间件
 app.use(localeMidware);
-app.use(ssoMiddleware(loginConf));
+
+if (webConf.enableLogin) {
+    app.use(ssoMiddleware(loginConf));
+}
 
 app.use(staticRouter(path.join(__dirname, "../client/dist"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
-app.use(staticRouter(path.join(__dirname, "../client/markdown"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
 
 app.use(pageRouter.routes());
 app.use(apiRouter.routes());
 app.use(ssoRouter.routes());
 
-const hostname = process.env.IP || "0.0.0.0";
-const port = process.env.PORT || 6080;
-
-app.listen(port as number, hostname, () => {
-    console.log(`server listening at ${hostname}:${port}`);
-});
-
 let cloning = false;
 
 const doClone = async () => {
 
-    if (cloning) {
-        return;
-    }
-
-    console.log(`cloneing ${webConf.respository.repo} => ${webConf.respository.path}`);
-    cloning = true;
-
-    await fs.remove(webConf.respository.tmpPath);
-
-    clone(webConf.respository.repo, webConf.respository.tmpPath, null, async(e) => {
-        if (!e) {
-            //clone succ
-            fs.moveSync(webConf.respository.path, webConf.respository.path + ".bak");
-            fs.moveSync(webConf.respository.tmpPath, webConf.respository.path);
-            await fs.remove(webConf.respository.tmpPath);
-            await fs.remove(webConf.respository.path + ".bak");
-
-            TreeController.loadTree();
-
-            console.log(`cloneing ${webConf.respository.repo} => ${webConf.respository.path} succ`);
-        } else {
-            console.log(`cloneing error: `, e);
+    try {
+        if (cloning) {
+            return;
         }
 
-        cloning = false;
-    });
+        console.log(`cloneing ${webConf.config.repo} => ${webConf.config.path}`);
+        cloning = true;
+
+        await fs.remove(webConf.respository.tmpPath);
+
+        clone(webConf.config.repo, webConf.respository.tmpPath, null, async (e) => {
+            if (!e) {
+                //clone succ
+
+                if (fs.existsSync(webConf.config.path)) {
+                    fs.moveSync(webConf.config.path, webConf.config.path + ".bak");
+                }
+                if (fs.existsSync(webConf.respository.tmpPath)) {
+                    fs.moveSync(webConf.respository.tmpPath, webConf.config.path);
+                }
+                await fs.remove(webConf.respository.tmpPath);
+                await fs.remove(webConf.config.path + ".bak");
+
+                TreeController.loadTree();
+
+                console.log(`clone succ ${webConf.config.repo} => ${webConf.config.path}`);
+            } else {
+                console.log(`cloneing error: `, e);
+            }
+
+            cloning = false;
+        });
+    } catch (e) {
+        console.log('error:', e);
+    }
 }
 
-if (webConf.respository.cloneOnStart) {
-    doClone();
+
+const initialize = async() => {
+
+    const dbPath = path.join(__dirname, "./config/config.json");
+
+    Object.assign(webConf, JSON.parse(fs.readFileSync(dbPath, 'utf-8')));
+
+    console.log(webConf);
+
+    if (webConf.enableLogin) {
+        LoginService.initialize();
+    }
+
+    TreeController.initialize();
+    TreeController.loadTree();
+
+    app.use(staticRouter(webConf.config.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
+
+    if (process.env.CLONE_ON_START || webConf.config.cloneOnStart) {
+
+        console.log('doClone');
+        doClone();
+
+        setInterval(() => {
+            console.log('setInterval', webConf.config.interval);
+
+            doClone();
+        }, webConf.config.interval);
+
+    }
 }
 
-setInterval(() => {
-    console.log('setInterval', webConf.respository.interval);
-
-    doClone();
-}, webConf.respository.interval);
-
+export {app, initialize};

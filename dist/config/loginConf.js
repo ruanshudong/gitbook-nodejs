@@ -19,6 +19,7 @@ const loginConf = {
     validateMatch: [
         ["data.result", true]
     ],
+    mustLogin: ['/pages/sso/modifyPass'],
     ignore: ['/static', '/pages/api/get_locale', '/sso.html', '/pages/sso'],
     apiPrefix: ["/pages/api"],
     apiNotLoginMes: "common.noLogin",

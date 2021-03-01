@@ -13,10 +13,17 @@ const secret = "d2DJ2#)84nD)92%1";
 const expireTimeRegister = 7 * 24 * 60 * 60 * 1000;
 const expireTimeForget = 1 * 24 * 60 * 60 * 1000;
 class LoginService {
+    static async initialize() {
+        console.log('LoginService', webConf_1.default.config);
+        this._loginDao = new LoginDao_1.LoginDao(webConf_1.default.config.dbConf);
+    }
     //登录操作
     static async login(uid, password) {
         const userInfo = await this._loginDao.getUserInfoByUid(uid);
         if (userInfo) {
+            if (!userInfo.activated) {
+                return { errMsg: '#login.notActivated#' };
+            }
             //todo
             if (!bcrypt_nodejs_1.default.compareSync(password, userInfo.password)) {
                 return { errMsg: '#login.passwordNoCorrect#' };
@@ -31,7 +38,8 @@ class LoginService {
     static async sendEmail(uid, subject, title, html) {
         if (!this._transporter) {
             this._transporter = await nodemailer_1.default.createTransport(webConf_1.default.email.smtp);
-            // let info = await this._transporter.verify();
+            const info = await this._transporter.verify();
+            console.log('sendmail verify:', info);
         }
         const info = await this._transporter.sendMail({
             from: webConf_1.default.email.smtp.auth.user,
@@ -49,12 +57,29 @@ class LoginService {
             return { errMsg: '#login.hasExist#' };
         }
         else {
+            await this._loginDao.insertUserInfo(uid, bcrypt_nodejs_1.default.hashSync(password));
             const claims = {
                 uid
             };
             const token = await this.signWebIDToken(claims, expireTimeRegister);
-            this.sendEmail(uid, "注册", "注册", `<a href='${webConf_1.default.email.schema}${host}/sso.html#/activited?token=${token}'>点击激活邮箱</a>, 24h小时内有效`);
+            this.sendEmail(uid, "激活账户", "注册", `<a href='${webConf_1.default.email.schema}${host}/sso.html#/activated?token=${token}'>点击激活您的账户</a>, 24h小时内有效`);
             return {};
+        }
+    }
+    static async activated(host, token) {
+        const claims = await this.verifyWebIDToken(token);
+        if (claims.uid) {
+            const userInfo = await this._loginDao.getUserInfoByUid(claims.uid);
+            if (!userInfo) {
+                return { errMsg: '#login.notExist#' };
+            }
+            if (userInfo.activated) {
+                return { errMsg: '#login.hasActivated#' };
+            }
+            await this._loginDao.activated(claims.uid);
+        }
+        else {
+            return { errMsg: '#login.activatedError#' };
         }
     }
     //找回密码
@@ -81,8 +106,13 @@ class LoginService {
         return {};
     }
     //注册操作
-    static async modifyPass(uid, password) {
-        await this._loginDao.modifyPass(uid, bcrypt_nodejs_1.default.hashSync(password));
+    static async modifyPass(uid, oldPassword, newPassword) {
+        const userInfo = await this._loginDao.getUserInfoByUid(uid);
+        if (!bcrypt_nodejs_1.default.compareSync(oldPassword, userInfo.password)) {
+            return { errMsg: '#login.passwordError#' };
+        }
+        const hash = bcrypt_nodejs_1.default.hashSync(newPassword);
+        await this._loginDao.modifyPass(uid, hash);
         return {};
     }
     static async getUidByTicket(ticket) {
@@ -96,9 +126,9 @@ class LoginService {
         }
         return null;
     }
-    static async validate(pUid, pTicket) {
+    static async validate(pTicket) {
         const uid = await this.getUidByTicket(pTicket);
-        if (uid && uid === pUid) {
+        if (uid) {
             return true;
         }
         else {
@@ -146,5 +176,5 @@ class LoginService {
     }
 }
 exports.default = LoginService;
-LoginService._loginDao = new LoginDao_1.LoginDao(webConf_1.default.dbConf);
+LoginService._loginDao = null; //new LoginDao(webConf.dbConf);
 LoginService._transporter = null;

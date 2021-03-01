@@ -10,11 +10,6 @@ class logger {
 }
 export default class LoginController {
 
-    //登出操作，清理session并跳转
-    public static async logout (ctx: Koa.Context) {
-        await ctx.redirect('/');
-    }
-
     //登录接口
     public static async login (ctx: Koa.Context) {
 
@@ -61,34 +56,30 @@ export default class LoginController {
     //校验ticket是否可用
     public static async isLogin(ctx: Koa.Context) {
 
-        const uid = ctx.cookies.get('uid');
-        const ticket = ctx.cookies.get('ticket');
-        if (uid && ticket) {
-            if (await LoginService.validate(uid, ticket)) {
+        const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
+
+        if (ticket) {
+            if (await LoginService.validate(ticket)) {
                 ctx.makeResObj(200, '', { login: true });
                 return;
             }
         }
-
-        ctx.redirect(loginConf.loginUrl);
-    }
-
-    //校验ticket是否可用
-    public static async validate (ctx: Koa.Context) {
-        try {
-            const uid = ctx.paramsObj.uid;
-            const ticket = ctx.paramsObj.ticket;
-            ctx.makeResObj(200, '', { result: await LoginService.validate(uid, ticket) });
-        } catch (e) {
-            logger.error('[validate]', e.body ? e.body.message : e, ctx);
-            ctx.makeResObj(500, e.body ? e.body.message : e);
-        }
+        ctx.makeResObj(200, '', { login: false, href: loginConf.loginUrl });
     }
 
     //注册接口
     public static async register (ctx: Koa.Context) {
-        const uid = ctx.paramsObj.uid;
-        const password = ctx.paramsObj.password;
+        const uid : string = ctx.paramsObj.uid;
+        const password : string = ctx.paramsObj.password;
+
+        for (let i = 0; i < webConf.email.ignoreEmail.length; i++)
+        {
+            if (uid.toLowerCase().indexOf(webConf.email.ignoreEmail[i]) != -1) {
+                ctx.makeResObj(500, '#login.ignoreEmail#');
+
+                return;
+            } 
+        }
 
         try {
             const rst = await LoginService.register(ctx.request.host, uid, password);
@@ -181,18 +172,17 @@ export default class LoginController {
 
 
     public static async modifyPass (ctx: Koa.Context) {
-        const password = ctx.paramsObj.password;
-        const repeatPassword = ctx.paramsObj.repeat_password;
-        if (password != repeatPassword) {
-            ctx.makeResObj(500, '#pass.passwordDiff#', {});
-            return;
-        }
+        const oldPassword = ctx.paramsObj.oldPassword;
+        const newPassword = ctx.paramsObj.newPassword;
 
         try {
-            const uid = ctx.uid || [];
-            await LoginService.modifyPass(uid, password);
-
-            ctx.makeResObj(200, '#pass.modifySucc#', {});
+            const uid = ctx.uid;
+            const rst = await LoginService.modifyPass(uid, oldPassword, newPassword);
+            if (rst && rst.errMsg) {
+                ctx.makeResObj(500, rst.errMsg, {});
+            } else {
+                ctx.makeResObj(200, '#login.modifySucc#', {});
+            }
         } catch (e) {
             logger.error('[modifyPass]', e.body ? e.body.message : e, ctx);
             ctx.makeResObj(500, e.body ? e.body.message : e);

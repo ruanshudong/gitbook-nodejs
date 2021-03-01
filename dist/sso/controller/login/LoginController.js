@@ -12,10 +12,6 @@ class logger {
     }
 }
 class LoginController {
-    //登出操作，清理session并跳转
-    static async logout(ctx) {
-        await ctx.redirect('/');
-    }
     //登录接口
     static async login(ctx) {
         const uid = ctx.paramsObj.uid;
@@ -61,32 +57,25 @@ class LoginController {
     }
     //校验ticket是否可用
     static async isLogin(ctx) {
-        const uid = ctx.cookies.get('uid');
-        const ticket = ctx.cookies.get('ticket');
-        if (uid && ticket) {
-            if (await LoginService_1.default.validate(uid, ticket)) {
+        const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
+        if (ticket) {
+            if (await LoginService_1.default.validate(ticket)) {
                 ctx.makeResObj(200, '', { login: true });
                 return;
             }
         }
-        ctx.redirect(loginConf_1.default.loginUrl);
-    }
-    //校验ticket是否可用
-    static async validate(ctx) {
-        try {
-            const uid = ctx.paramsObj.uid;
-            const ticket = ctx.paramsObj.ticket;
-            ctx.makeResObj(200, '', { result: await LoginService_1.default.validate(uid, ticket) });
-        }
-        catch (e) {
-            logger.error('[validate]', e.body ? e.body.message : e, ctx);
-            ctx.makeResObj(500, e.body ? e.body.message : e);
-        }
+        ctx.makeResObj(200, '', { login: false, href: loginConf_1.default.loginUrl });
     }
     //注册接口
     static async register(ctx) {
         const uid = ctx.paramsObj.uid;
         const password = ctx.paramsObj.password;
+        for (let i = 0; i < webConf_1.default.email.ignoreEmail.length; i++) {
+            if (uid.toLowerCase().indexOf(webConf_1.default.email.ignoreEmail[i]) != -1) {
+                ctx.makeResObj(500, '#login.ignoreEmail#');
+                return;
+            }
+        }
         try {
             const rst = await LoginService_1.default.register(ctx.request.host, uid, password);
             if (rst && rst.errMsg) {
@@ -98,6 +87,23 @@ class LoginController {
         }
         catch (e) {
             logger.error('[register]', e.body ? e.body.message : e, ctx);
+            ctx.makeResObj(500, e.body ? e.body.message : e);
+        }
+    }
+    // activated
+    static async activated(ctx) {
+        const token = ctx.paramsObj.token;
+        try {
+            const rst = await LoginService_1.default.activated(ctx.request.host, token);
+            if (rst && rst.errMsg) {
+                ctx.makeResObj(500, rst.errMsg, {});
+            }
+            else {
+                ctx.makeResObj(200, '', { href: loginConf_1.default.loginUrl });
+            }
+        }
+        catch (e) {
+            logger.error('[activated]', e.body ? e.body.message : e, ctx);
             ctx.makeResObj(500, e.body ? e.body.message : e);
         }
     }
@@ -155,16 +161,17 @@ class LoginController {
         }
     }
     static async modifyPass(ctx) {
-        const password = ctx.paramsObj.password;
-        const repeatPassword = ctx.paramsObj.repeat_password;
-        if (password != repeatPassword) {
-            ctx.makeResObj(500, '#pass.passwordDiff#', {});
-            return;
-        }
+        const oldPassword = ctx.paramsObj.oldPassword;
+        const newPassword = ctx.paramsObj.newPassword;
         try {
-            const uid = ctx.uid || [];
-            await LoginService_1.default.modifyPass(uid, password);
-            ctx.makeResObj(200, '#pass.modifySucc#', {});
+            const uid = ctx.uid;
+            const rst = await LoginService_1.default.modifyPass(uid, oldPassword, newPassword);
+            if (rst && rst.errMsg) {
+                ctx.makeResObj(500, rst.errMsg, {});
+            }
+            else {
+                ctx.makeResObj(200, '#login.modifySucc#', {});
+            }
         }
         catch (e) {
             logger.error('[modifyPass]', e.body ? e.body.message : e, ctx);

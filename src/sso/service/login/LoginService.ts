@@ -12,9 +12,17 @@ const expireTimeForget: number = 1 * 24 * 60 * 60 * 1000;
 
 export default class LoginService {
 
-    private static _loginDao: LoginDao = new LoginDao(webConf.dbConf);
+    private static _loginDao: LoginDao = null; //new LoginDao(webConf.dbConf);
 
     private static _transporter = null;
+
+    public static async initialize() {
+
+        console.log('LoginService', webConf.config);
+        
+        this._loginDao = new LoginDao(webConf.config.dbConf);
+    }
+
 
     //登录操作
     public static async login(uid: string, password: string) {
@@ -45,7 +53,9 @@ export default class LoginService {
         if (!this._transporter) {
             this._transporter = await nodemailer.createTransport(webConf.email.smtp);
 
-            // let info = await this._transporter.verify();
+            const info = await this._transporter.verify();
+
+            console.log('sendmail verify:', info);
         }
 
         const info = await this._transporter.sendMail({
@@ -137,12 +147,22 @@ export default class LoginService {
         return {};
 
     }
-    
+   
     //注册操作
-    public static async modifyPass(uid: string, password: string) {
+    public static async modifyPass(uid: string, oldPassword: string, newPassword: string) {
 
-        await this._loginDao.modifyPass(uid, bcrypt.hashSync(password));
-        return {};
+        const userInfo = await this._loginDao.getUserInfoByUid(uid);
+
+        if (!bcrypt.compareSync(oldPassword, userInfo.password)) {
+            return { errMsg: '#login.passwordError#' };
+        }
+
+        const hash = bcrypt.hashSync(newPassword);
+
+        await this._loginDao.modifyPass(uid, hash);
+
+        return { };
+        
     }
 
     public static async getUidByTicket(ticket: string) {
@@ -162,9 +182,9 @@ export default class LoginService {
         return null;
     }
 
-    public static async validate(pUid: string, pTicket: string) {
+    public static async validate(pTicket: string) {
         const uid = await this.getUidByTicket(pTicket);
-        if (uid && uid === pUid) {
+        if (uid) {
             return true;
         } else {
             return false;
@@ -212,3 +232,4 @@ export default class LoginService {
         })
     }
 }
+

@@ -13,16 +13,11 @@ const ssoConf = [
     ['post', '/forget', LoginController_1.default, LoginController_1.default.forget, { uid: 'notEmpty' }],
     ['post', '/resetPass', LoginController_1.default, LoginController_1.default.resetPass, { password: 'notEmpty', token: 'notEmpty' }],
     ['post', '/login', LoginController_1.default, LoginController_1.default.login, { uid: 'notEmpty', password: 'notEmpty', captcha: 'notEmpty' }],
-    ['get', '/logout', LoginController_1.default, LoginController_1.default.logout],
+    ['post', '/activated', LoginController_1.default, LoginController_1.default.activated, { token: 'notEmpty' }],
     ['get', '/getUidByTicket', LoginController_1.default, LoginController_1.default.getUidByTicket],
-    ['get', '/validate', LoginController_1.default, LoginController_1.default.validate],
     ['get', '/getLoginUid', LoginController_1.default, LoginController_1.default.getLoginUid],
     ['get', '/isLogin', LoginController_1.default, LoginController_1.default.isLogin],
     ['get', '/isEnableLogin', LoginController_1.default, LoginController_1.default.isEnableLogin],
-    // ['post', '/ModifyPass', DemoUserController.adminModifyPass],
-    // ['get', '/isAdmin', DemoAuthController.isAdmin],
-    // 是否启用LDAP
-    // ['get', '/isEnableLdap', DemoLdapController.isEnableLdap],
     //需要登录
     ['post', '/modifyPass', LoginController_1.default, LoginController_1.default.modifyPass]
 ];

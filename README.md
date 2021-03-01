@@ -14,7 +14,7 @@ web页面会实时解析markddown文件, 并转化成html
 启动client:
 - 进入client目录
 - npm install
-- npm run serve
+- npm run dev 
 
 启动server:
 - 源码目录: npm install
@@ -24,7 +24,7 @@ web页面会实时解析markddown文件, 并转化成html
 
 开发时修改任何代码, 服务器和客户端都会自动编译和更新.
 
-# 如何发布
+# 源码如何发布
 
 编译client
 - 进入client目录
@@ -44,6 +44,12 @@ npm run prd
 
 **注意默认开启的是6080端口!!(config/webConf.ts中修改)**
 
+# Docker发布
+可以编译成docker来发布
+```sh
+npm run docker
+docker run -p 80:6080 -v /data/doc:/root/gitbook/client/markdown gitbook
+```
 
 # 关于配置
 

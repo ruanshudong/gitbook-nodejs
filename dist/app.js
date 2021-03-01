@@ -22,6 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.initialize = exports.app = void 0;
 const koa_1 = __importDefault(require("koa"));
 const path = __importStar(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
@@ -30,13 +31,15 @@ const koa_static_1 = __importDefault(require("koa-static"));
 const koa_session_1 = __importDefault(require("koa-session"));
 const koa_helmet_1 = __importDefault(require("koa-helmet"));
 const git_clone_1 = __importDefault(require("git-clone"));
-const midware_1 = require("./midware");
-// import { pageRouter, apiRouter } from "./midware";
-const webConf_1 = __importDefault(require("./config/webConf"));
 const TreeController_1 = __importDefault(require("./app/controller/TreeController"));
+const LoginService_1 = __importDefault(require("./sso/service/login/LoginService"));
+const midware_1 = require("./midware");
+const webConf_1 = __importDefault(require("./config/webConf"));
 const loginConf_1 = __importDefault(require("./config/loginConf"));
+const localeMidware_1 = __importDefault(require("./midware/localeMidware"));
 const ssoMidware_1 = __importDefault(require("./midware/ssoMidware"));
 const app = new koa_1.default();
+exports.app = app;
 //信任proxy头部，支持 X-Forwarded-Host
 app.proxy = true;
 // error handler
@@ -57,45 +60,65 @@ app.use(koa_session_1.default(CONFIG, app));
 //安全防护
 app.use(koa_helmet_1.default());
 app.use(koa_bodyparser_1.default());
-app.use(ssoMidware_1.default(loginConf_1.default));
+//国际化多语言中间件
+app.use(localeMidware_1.default);
+if (webConf_1.default.enableLogin) {
+    app.use(ssoMidware_1.default(loginConf_1.default));
+}
 app.use(koa_static_1.default(path.join(__dirname, "../client/dist"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
-app.use(koa_static_1.default(path.join(__dirname, "../client/markdown"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
 app.use(midware_1.pageRouter.routes());
 app.use(midware_1.apiRouter.routes());
 app.use(midware_1.ssoRouter.routes());
-const hostname = process.env.IP || "0.0.0.0";
-const port = process.env.PORT || 6080;
-app.listen(port, hostname, () => {
-    console.log(`server listening at ${hostname}:${port}`);
-});
 let cloning = false;
 const doClone = async () => {
-    if (cloning) {
-        return;
+    try {
+        if (cloning) {
+            return;
+        }
+        console.log(`cloneing ${webConf_1.default.config.repo} => ${webConf_1.default.config.path}`);
+        cloning = true;
+        await fs_extra_1.default.remove(webConf_1.default.respository.tmpPath);
+        git_clone_1.default(webConf_1.default.config.repo, webConf_1.default.respository.tmpPath, null, async (e) => {
+            if (!e) {
+                //clone succ
+                if (fs_extra_1.default.existsSync(webConf_1.default.config.path)) {
+                    fs_extra_1.default.moveSync(webConf_1.default.config.path, webConf_1.default.config.path + ".bak");
+                }
+                if (fs_extra_1.default.existsSync(webConf_1.default.respository.tmpPath)) {
+                    fs_extra_1.default.moveSync(webConf_1.default.respository.tmpPath, webConf_1.default.config.path);
+                }
+                await fs_extra_1.default.remove(webConf_1.default.respository.tmpPath);
+                await fs_extra_1.default.remove(webConf_1.default.config.path + ".bak");
+                TreeController_1.default.loadTree();
+                console.log(`clone succ ${webConf_1.default.config.repo} => ${webConf_1.default.config.path}`);
+            }
+            else {
+                console.log(`cloneing error: `, e);
+            }
+            cloning = false;
+        });
     }
-    console.log(`cloneing ${webConf_1.default.respository.repo} => ${webConf_1.default.respository.path}`);
-    cloning = true;
-    await fs_extra_1.default.remove(webConf_1.default.respository.tmpPath);
-    git_clone_1.default(webConf_1.default.respository.repo, webConf_1.default.respository.tmpPath, null, async (e) => {
-        if (!e) {
-            //clone succ
-            fs_extra_1.default.moveSync(webConf_1.default.respository.path, webConf_1.default.respository.path + ".bak");
-            fs_extra_1.default.moveSync(webConf_1.default.respository.tmpPath, webConf_1.default.respository.path);
-            await fs_extra_1.default.remove(webConf_1.default.respository.tmpPath);
-            await fs_extra_1.default.remove(webConf_1.default.respository.path + ".bak");
-            TreeController_1.default.loadTree();
-            console.log(`cloneing ${webConf_1.default.respository.repo} => ${webConf_1.default.respository.path} succ`);
-        }
-        else {
-            console.log(`cloneing error: `, e);
-        }
-        cloning = false;
-    });
+    catch (e) {
+        console.log('error:', e);
+    }
 };
-if (webConf_1.default.respository.cloneOnStart) {
-    doClone();
-}
-setInterval(() => {
-    console.log('setInterval', webConf_1.default.respository.interval);
-    doClone();
-}, webConf_1.default.respository.interval);
+const initialize = async () => {
+    const dbPath = path.join(__dirname, "./config/config.json");
+    Object.assign(webConf_1.default, JSON.parse(fs_extra_1.default.readFileSync(dbPath, 'utf-8')));
+    console.log(webConf_1.default);
+    if (webConf_1.default.enableLogin) {
+        LoginService_1.default.initialize();
+    }
+    TreeController_1.default.initialize();
+    TreeController_1.default.loadTree();
+    app.use(koa_static_1.default(process.env.GIT_PATH || webConf_1.default.config.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
+    if (process.env.CLONE_ON_START || webConf_1.default.config.cloneOnStart) {
+        console.log('doClone');
+        doClone();
+        setInterval(() => {
+            console.log('setInterval', webConf_1.default.config.interval);
+            doClone();
+        }, webConf_1.default.config.interval);
+    }
+};
+exports.initialize = initialize;

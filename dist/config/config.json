@@ -1,0 +1,24 @@
+
+{
+    "config": {
+        "repo": "https://github.com/TarsCloud/TarsDocs",
+        "path": "./client/markdown",
+        "interval": 3600000,
+        "cloneOnStart": false,
+        "dbConf": {
+            "database": "db_gitbook",
+            "host": "127.0.0.1",
+            "port": "3306",
+            "user": "root",
+            "password": "Root@12345",
+            "charset": "utf8mb4",
+            "pool": {
+                "max": 10,
+                "min": 0,
+                "idle": 10000
+            }
+        }
+    }
+
+}
+

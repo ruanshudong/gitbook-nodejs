@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <div id="app"  class="login_page">
     <el-container >
-     <router-view style="height:100%"></router-view>
+     <router-view style="height:100%; width:100%; position:relative"></router-view>
     </el-container>
   </div>
 </template>
@@ -17,19 +17,6 @@ export default {
   },
   methods: {
     
-    // checkLogin() {
-
-    //   this.$ajax.getJSON("/sso/isLogin")
-    //     .then((data) => {
-    //       if(!data.login) {
-    //         location.hash=data.hash;
-    //       }
-    //     })
-    //     .catch((err) => {
-    //       location.hash='/login';
-    //       // location.href="/login.html";
-    //     });
-    // },
   },
   created() {
   },

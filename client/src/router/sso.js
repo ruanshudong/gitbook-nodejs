@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/login.vue'
 import ResetPass from '@/components/resetPass.vue'
+import ModifyPass from '@/components/modifyPass.vue'
 import Activated from '@/components/activated.vue'
 
 const originalPush = Router.prototype.push
@@ -22,6 +23,11 @@ export default new Router({
       path: '/resetPass',
       name: 'ResetPass',
       component: ResetPass
+    },
+    {
+      path: '/modifyPass',
+      name: 'ModifyPass',
+      component: ModifyPass
     },
     {
       path: '/activated',

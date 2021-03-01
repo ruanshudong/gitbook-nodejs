@@ -1,6 +1,11 @@
 <template>
-  <span v-html="html">
-  </span>
+  <div v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    >
+    <span v-html="html"> </span>
+</div>
+  
 </template>
 
 <script >
@@ -9,23 +14,31 @@ export default {
   name: 'Page',
   data() {
     return {
+      loading: false,
       html: ''
     };
   },
   methods: {
-    
+   
+    proxyImage: function (e) {
+            if (e.target.tagName.toUpperCase() === 'IMG') {
+              this.img = e.target.src
+            }
+    },
     fetchData() {
 
+      this.loading = true;
       let page = location.hash;
 
-      this.$ajax
-        .getJSON("/api/view", {
-          page
-        })
-        .then((data) => {
-          this.html = data.data;
+      this.$ajax .getJSON("/api/view", { page }) .then((data) => {
+        setTimeout(() => {
+          this.loading = false;
+          this.html = data.data;          
+        }, 200);
+
         })
         .catch((err) => {
+          this.loading = false;
         });
     },
   },
@@ -42,10 +55,3 @@ export default {
 
 </script>
 
-<style>
-pre {position: relative;margin-bottom: 24px;border-radius: 3px;border: 1px solid #C3CCD0;background: #FFF;overflow: hidden;}
-code {display: block;padding: 12px 24px;overflow-y: auto;font-weight: 300;font-family: Menlo, monospace;}
-code.has-numbering {margin-left: 21px;}
-.pre-numbering {position: absolute;top: 0;left: 0;width: 20px;padding: 12px 2px 12px 0;border-right: 1px solid #C3CCD0;border-radius: 3px 0 0 3px;background-color: #EEE;text-align: right;font-family: Menlo, monospace;font-size: 0.8em;color: #AAA;}
-
-</style>
