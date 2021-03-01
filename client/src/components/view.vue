@@ -21,9 +21,9 @@ export default {
   methods: {
    
     proxyImage: function (e) {
-            if (e.target.tagName.toUpperCase() === 'IMG') {
-              this.img = e.target.src
-            }
+      if (e.target.tagName.toUpperCase() === 'IMG') {
+        this.img = e.target.src
+      }
     },
     fetchData() {
 
@@ -33,7 +33,7 @@ export default {
       this.$ajax .getJSON("/api/view", { page }) .then((data) => {
         setTimeout(() => {
           this.loading = false;
-          this.html = data.data;          
+          this.html = data.page;          
         }, 200);
 
         })

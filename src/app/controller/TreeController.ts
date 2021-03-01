@@ -57,7 +57,7 @@ class TreeController {
             name: token.text,
             href: token.type == 'link' ? token.href : null,
             id: '' + this._id++,
-            children: null,
+            children: [],
         }
 
         // console.log(data);
@@ -93,7 +93,7 @@ class TreeController {
             })
         }
 
-        // SearchService.load(this._markdown, this.load);
+        SearchService.load(this._markdown, this.load);
     }
 
     protected static parseItem(data: any, items: any[]) {
@@ -233,7 +233,7 @@ class TreeController {
 
     public static async viewMarkdown(ctx: Koa.Context) {
 
-        console.log(ctx.request.url);
+        // console.log(ctx.request.url);
 
         ctx.body = this.getHtml('#' + ctx.request.url);
     }
@@ -244,9 +244,7 @@ class TreeController {
 
         const html = this.getHtml(page);
 
-        // console.log(page, html);
-
-        ctx.makeResObj(200, "succ", { data: html });
+        ctx.makeResObj(200, "succ", { page: html });
     }
 
     public static async tree(ctx: Koa.Context) {
@@ -258,15 +256,15 @@ class TreeController {
 
         const query = ctx.paramsObj.query;
 
-        // const data = SearchService.search(query);
+        const { queryWords, result } = SearchService.search(query);
 
         const page = [];
 
-        // data.forEach(d => {
-        //     page.push(SearchService.idToFile(d));
-        // })
+        result.forEach(d => {
+            page.push(SearchService.idToFile(d));
+        })
 
-        ctx.makeResObj(200, "succ", page);
+        ctx.makeResObj(200, "succ", { page, queryWords });
     }
 
     public static async refresh(ctx: Koa.Context) {

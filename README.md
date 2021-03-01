@@ -6,9 +6,10 @@
 
 # 代码逻辑
 
-服务器启动以后, 会定时git clone TarsDocs, 到client/markdown目录下.
+服务器启动以后, 会定时git clone TarsDocs, 到client/markdown目录下, 注意服务器需要安装 git
 web页面会实时解析markddown文件, 并转化成html
 
+你可以用这个工程来解析其他的markdown文件!
 # 如何调试
 
 启动client:
@@ -50,6 +51,15 @@ npm run prd
 npm run docker
 docker run -p 80:6080 -v /data/doc:/root/gitbook/client/markdown gitbook
 ```
+
+# 关于搜索
+
+搜索用到分词技术, 使用了一个nodejieba的库, 注意他底层是c++写的, 因此导致了这部分是无法跨平台的!
+
+# 关于用户系统
+
+默认是没有开启用户登录的, 如果开启用户登录, 则用户需要通过email注册和激活, 才能完成访问.
+开启方式: 打开webConf.ts中的enableLogin
 
 # 关于配置
 

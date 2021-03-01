@@ -8,6 +8,7 @@ const path_1 = __importDefault(require("path"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const marked_1 = __importDefault(require("marked"));
 const highlight_js_1 = __importDefault(require("highlight.js"));
+const SearchService_1 = require("../service/SearchService");
 class TreeController {
     static initialize() {
         marked_1.default.setOptions({
@@ -44,7 +45,7 @@ class TreeController {
             name: token.text,
             href: token.type == 'link' ? token.href : null,
             id: '' + this._id++,
-            children: null,
+            children: [],
         };
         // console.log(data);
         if (data.href) {
@@ -68,7 +69,7 @@ class TreeController {
                 }
             });
         }
-        // SearchService.load(this._markdown, this.load);
+        SearchService_1.SearchService.load(this._markdown, this.load);
     }
     static parseItem(data, items) {
         items.forEach(i => {
@@ -170,14 +171,13 @@ class TreeController {
         return html;
     }
     static async viewMarkdown(ctx) {
-        console.log(ctx.request.url);
+        // console.log(ctx.request.url);
         ctx.body = this.getHtml('#' + ctx.request.url);
     }
     static async view(ctx) {
         const page = decodeURIComponent(ctx.paramsObj.page);
         const html = this.getHtml(page);
-        // console.log(page, html);
-        ctx.makeResObj(200, "succ", { data: html });
+        ctx.makeResObj(200, "succ", { page: html });
     }
     static async tree(ctx) {
         //每次clone的时候解析一次，如果需要本地目录文件每次访问的时候，实时解析，去掉该注释
@@ -185,12 +185,12 @@ class TreeController {
     }
     static async search(ctx) {
         const query = ctx.paramsObj.query;
-        // const data = SearchService.search(query);
+        const { queryWords, result } = SearchService_1.SearchService.search(query);
         const page = [];
-        // data.forEach(d => {
-        //     page.push(SearchService.idToFile(d));
-        // })
-        ctx.makeResObj(200, "succ", page);
+        result.forEach(d => {
+            page.push(SearchService_1.SearchService.idToFile(d));
+        });
+        ctx.makeResObj(200, "succ", { page, queryWords });
     }
     static async refresh(ctx) {
         await this.loadTree();

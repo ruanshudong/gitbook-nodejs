@@ -111,7 +111,7 @@ const initialize = async () => {
     }
     TreeController_1.default.initialize();
     TreeController_1.default.loadTree();
-    app.use(koa_static_1.default(process.env.GIT_PATH || webConf_1.default.config.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
+    app.use(koa_static_1.default(webConf_1.default.config.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
     if (process.env.CLONE_ON_START || webConf_1.default.config.cloneOnStart) {
         console.log('doClone');
         doClone();

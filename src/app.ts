@@ -113,6 +113,7 @@ const initialize = async() => {
     }
 
     TreeController.initialize();
+
     TreeController.loadTree();
 
     app.use(staticRouter(webConf.config.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));

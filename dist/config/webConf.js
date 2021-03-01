@@ -19,8 +19,8 @@ const webConf = {
             port: 465,
             secure: true,
             auth: {
-                user: 'gitbook@upchina.com',
-                pass: 'Up@987654',
+                user: 'xxxx@xxxx.com',
+                pass: 'xxxxx',
             }
         },
         schema: 'http://',

@@ -6,11 +6,11 @@
 <el-container>
   <el-header width="100%">
     <img class="logo" src="/static/images/logo.png">
-    <!-- <div class="search_bar">      
+    <div class="search_bar">      
         <el-input placeholder="请输入搜索关键字" v-model="input" class="input-with-select">       
         <el-button slot="append" icon="el-icon-search" @click="query"></el-button>
         </el-input>      
-    </div> -->
+    </div>
 
 <el-menu :default-active="activeIndex" class="btn_login_out" mode="horizontal" @select="handleSelect" v-if="uid != ''">
   <el-submenu index="1">
@@ -39,14 +39,17 @@
         </div>
     </el-aside>
 
-    <el-main id="main" v-viewer>
-      <div v-if="!search">
+    <el-main id="main" v-viewer width="90%">
+      <div v-if="!search" width="100%">
        <router-view></router-view>
        <div class="backTop">回到顶部</div>
       </div>
-      <div v-if="search">
-        <el-tag type="success" style="cursor: pointer" v-for="(data, index) in queryData" :key="index" @click="selectTree(data.href)">{{data.name}}</el-tag>
+      <div v-if="search" style="margin: 30px">
+        <el-tag type="success" style="cursor: pointer; margin: 3px" v-for="(data, index) in queryData" :key="index" @click="searchDoc(data)">{{data.name}}</el-tag>
+        <el-divider></el-divider>
       </div>
+
+       <router-view v-if="showPage"></router-view>
     </el-main>
 
   </el-container>
@@ -65,12 +68,14 @@ export default {
       activeIndex: "0",
       input: '',
       search: false,
+      showPage: false,
       queryData: [],
       treeErrMsg: "load failed",
       treeData: [],
       treeSearchKey: "",
+      loading: false,
+      html: '',
       page: "README.md",
-      isIconPlay: false,
       defaultProps: {
         children: "children",
         label: "label",
@@ -86,8 +91,10 @@ export default {
       this.$ajax
         .getJSON("/api/search", {query: this.input})
         .then((data) => {
+          location.hash = "/";
           this.search = true;
-          this.queryData = data;
+          this.showPage = false;
+          this.queryData = data.page;
         })
         .catch((err) => {
         });      
@@ -119,13 +126,21 @@ export default {
 
       }
     },
+    searchDoc(nodeKey) {
+      
+      this.search = true;
+
+      if (nodeKey.href) {
+        this.showPage = true;
+        this.$router.push(`${nodeKey.href.substring(1)}`);
+      }
+    },
     selectTree(nodeKey) {
 
       this.search = false;
 
-      // location.href = nodeKey.href;
-
       if (nodeKey.href) {
+        this.showPage = false;
         this.$router.push(`/${nodeKey.href}`);
       }
       setTimeout('document.getElementById("main").scrollTop = 0',200)
@@ -171,6 +186,7 @@ export default {
             }
         }
         let res;
+       
         for (let i = 0; i < tree.children.length; i++) {
             res = this.findNode(tree.children[i], id)
             if (res != undefined) {
@@ -266,15 +282,18 @@ export default {
         });
     },
   },
+  // watch: {
+  //   // 如果路由有变化，会再次执行该方法
+  //   '$route': 'fetchData'
+  // },
   created() {
     this.getTreeData("", 0);
     this.getUid();
+    // this.fetchData();
   },
   mounted() {
     $(".backTop").click(function(){
        $("main").scrollTop(0);
-      // $("main").animate({scrollTop:0},'slow');
-            
     })
 
    $("main").scroll(function() {
