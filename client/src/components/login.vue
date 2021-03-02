@@ -105,7 +105,7 @@
       </el-form>
     </el-card>
 
-  <div class="copyright"> Copyright©2012-2021 优品科技管理股份有限公司 400-603-1846 版权所有 <a href="http://www.miitbeian.gov.cn" target="_blank">粤ICP备15103921号-3</a></div></div>  
+  <div class="copyright"> Copyright©2012-2021 TARS 版权所有</div></div>  
 </template>
 <script>
 

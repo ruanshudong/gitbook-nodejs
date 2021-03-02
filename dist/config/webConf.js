@@ -10,7 +10,7 @@ const webConf = {
         loggerPath: path_1.default.join(__dirname, "../log"),
         logFileKeepDays: "1",
         defaultLanguage: "cn",
-        title: '优品科技文档',
+        title: 'TARS文档',
     },
     enableLogin: false,
     email: {

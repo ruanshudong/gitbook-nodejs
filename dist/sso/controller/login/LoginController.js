@@ -57,14 +57,19 @@ class LoginController {
     }
     //校验ticket是否可用
     static async isLogin(ctx) {
-        const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
-        if (ticket) {
-            if (await LoginService_1.default.validate(ticket)) {
-                ctx.makeResObj(200, '', { login: true });
-                return;
+        if (webConf_1.default.enableLogin) {
+            const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
+            if (ticket) {
+                if (await LoginService_1.default.validate(ticket)) {
+                    ctx.makeResObj(200, '', { login: true });
+                    return;
+                }
             }
+            ctx.makeResObj(200, '', { login: false, href: loginConf_1.default.loginUrl });
         }
-        ctx.makeResObj(200, '', { login: false, href: loginConf_1.default.loginUrl });
+        else {
+            ctx.makeResObj(200, '', { login: true, href: loginConf_1.default.loginUrl });
+        }
     }
     //注册接口
     static async register(ctx) {

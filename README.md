@@ -50,8 +50,9 @@ npm run prd
 ```sh
 
 npm run docker
-docker run -p 80:6080 -v /data/doc:/root/gitbook/client/markdown gitbook
-docker run -e CLONE_ON_START=true -p 8080:6080 -v /data/gitbook:/root/gitbook/client/markdown gitbook
+docker run -p 80:6080 -v /data/doc:/root/gitbook/client/markdown tarscloud/gitbook
+docker run -p 8080:6080 -v /data/doc:/root/gitbook/client/markdown tarscloud/gitbook
+docker run -e CLONE_ON_START=true -p 8080:6080 -v /data/gitbook:/root/gitbook/client/markdown tarscloud/gitbook
 
 ```
 

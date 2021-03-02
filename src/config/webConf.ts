@@ -8,7 +8,7 @@ const webConf = {
         loggerPath: path.join(__dirname, "../log"),    //本地日志的目录
         logFileKeepDays: "1",         //日志保留时间
         defaultLanguage: "cn",    //cn 或 en ，用户默认的语言环境
-        title: '优品科技文档',
+        title: 'TARS文档',
     },
     enableLogin: false,
     email: {

@@ -56,15 +56,20 @@ export default class LoginController {
     //校验ticket是否可用
     public static async isLogin(ctx: Koa.Context) {
 
-        const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
+        if (webConf.enableLogin) {
+            const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
 
-        if (ticket) {
-            if (await LoginService.validate(ticket)) {
-                ctx.makeResObj(200, '', { login: true });
-                return;
+            if (ticket) {
+                if (await LoginService.validate(ticket)) {
+                    ctx.makeResObj(200, '', { login: true });
+                    return;
+                }
             }
+            ctx.makeResObj(200, '', { login: false, href: loginConf.loginUrl });
+
+        } else {
+            ctx.makeResObj(200, '', { login: true, href: loginConf.loginUrl });
         }
-        ctx.makeResObj(200, '', { login: false, href: loginConf.loginUrl });
     }
 
     //注册接口
