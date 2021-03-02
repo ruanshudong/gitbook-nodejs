@@ -57,7 +57,7 @@ class LoginController {
     }
     //校验ticket是否可用
     static async isLogin(ctx) {
-        if (webConf_1.default.enableLogin) {
+        if (webConf_1.default.config.enableLogin) {
             const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
             if (ticket) {
                 if (await LoginService_1.default.validate(ticket)) {
@@ -75,8 +75,8 @@ class LoginController {
     static async register(ctx) {
         const uid = ctx.paramsObj.uid;
         const password = ctx.paramsObj.password;
-        for (let i = 0; i < webConf_1.default.email.ignoreEmail.length; i++) {
-            if (uid.toLowerCase().indexOf(webConf_1.default.email.ignoreEmail[i]) != -1) {
+        for (let i = 0; i < webConf_1.default.config.email.ignoreEmail.length; i++) {
+            if (uid.toLowerCase().indexOf(webConf_1.default.config.email.ignoreEmail[i]) != -1) {
                 ctx.makeResObj(500, '#login.ignoreEmail#');
                 return;
             }
@@ -149,7 +149,7 @@ class LoginController {
     }
     static async isEnableLogin(ctx) {
         try {
-            ctx.makeResObj(200, '', { enableLogin: webConf_1.default.enableLogin || false });
+            ctx.makeResObj(200, '', { enableLogin: webConf_1.default.config.enableLogin || false });
         }
         catch (e) {
             logger.error('[isEnableLogin]', e.body ? e.body.message : e, ctx);

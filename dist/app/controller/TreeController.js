@@ -181,7 +181,7 @@ class TreeController {
     }
     static async tree(ctx) {
         //每次clone的时候解析一次，如果需要本地目录文件每次访问的时候，实时解析，去掉该注释
-        ctx.makeResObj(200, "succ", { tree: this._treeData, title: webConf_1.default.webConf.title });
+        ctx.makeResObj(200, "succ", { tree: this._treeData, title: webConf_1.default.config.webConf.title });
     }
     static async search(ctx) {
         const query = ctx.paramsObj.query;

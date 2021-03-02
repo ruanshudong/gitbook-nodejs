@@ -56,7 +56,7 @@ export default class LoginController {
     //校验ticket是否可用
     public static async isLogin(ctx: Koa.Context) {
 
-        if (webConf.enableLogin) {
+        if (webConf.config.enableLogin) {
             const ticket = ctx.paramsObj.ticket || ctx.cookies.get('ticket');
 
             if (ticket) {
@@ -77,9 +77,9 @@ export default class LoginController {
         const uid : string = ctx.paramsObj.uid;
         const password : string = ctx.paramsObj.password;
 
-        for (let i = 0; i < webConf.email.ignoreEmail.length; i++)
+        for (let i = 0; i < webConf.config.email.ignoreEmail.length; i++)
         {
-            if (uid.toLowerCase().indexOf(webConf.email.ignoreEmail[i]) != -1) {
+            if (uid.toLowerCase().indexOf(webConf.config.email.ignoreEmail[i]) != -1) {
                 ctx.makeResObj(500, '#login.ignoreEmail#');
 
                 return;
@@ -159,7 +159,7 @@ export default class LoginController {
     
     public static async isEnableLogin (ctx: Koa.Context) {
         try {
-            ctx.makeResObj(200, '', { enableLogin: webConf.enableLogin || false });
+            ctx.makeResObj(200, '', { enableLogin: webConf.config.enableLogin || false });
         } catch (e) {
             logger.error('[isEnableLogin]', e.body ? e.body.message : e, ctx);
             ctx.makeResObj(500, e.body ? e.body.message : e);

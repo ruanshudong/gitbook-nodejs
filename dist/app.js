@@ -62,7 +62,7 @@ app.use(koa_helmet_1.default());
 app.use(koa_bodyparser_1.default());
 //国际化多语言中间件
 app.use(localeMidware_1.default);
-if (webConf_1.default.enableLogin) {
+if (webConf_1.default.config.enableLogin) {
     app.use(ssoMidware_1.default(loginConf_1.default));
 }
 app.use(koa_static_1.default(path.join(__dirname, "../client/dist"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
@@ -106,7 +106,7 @@ const initialize = async () => {
     const dbPath = path.join(__dirname, "./config/config.json");
     Object.assign(webConf_1.default, JSON.parse(fs_extra_1.default.readFileSync(dbPath, 'utf-8')));
     console.log(webConf_1.default);
-    if (webConf_1.default.enableLogin) {
+    if (webConf_1.default.config.enableLogin) {
         LoginService_1.default.initialize();
     }
     TreeController_1.default.initialize();

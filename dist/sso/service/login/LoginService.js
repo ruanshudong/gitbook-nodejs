@@ -37,12 +37,12 @@ class LoginService {
     }
     static async sendEmail(uid, subject, title, html) {
         if (!this._transporter) {
-            this._transporter = await nodemailer_1.default.createTransport(webConf_1.default.email.smtp);
+            this._transporter = await nodemailer_1.default.createTransport(webConf_1.default.config.email.smtp);
             const info = await this._transporter.verify();
             console.log('sendmail verify:', info);
         }
         const info = await this._transporter.sendMail({
-            from: webConf_1.default.email.smtp.auth.user,
+            from: webConf_1.default.config.email.smtp.auth.user,
             to: [uid],
             subject: subject,
             text: title,
@@ -62,7 +62,7 @@ class LoginService {
                 uid
             };
             const token = await this.signWebIDToken(claims, expireTimeRegister);
-            this.sendEmail(uid, "激活账户", "注册", `<a href='${webConf_1.default.email.schema}${host}/sso.html#/activated?token=${token}'>点击激活您的账户</a>, 24h小时内有效`);
+            this.sendEmail(uid, "激活账户", "注册", `<a href='${webConf_1.default.config.email.schema}${host}/sso.html#/activated?token=${token}'>点击激活您的账户</a>, 24h小时内有效`);
             return {};
         }
     }
@@ -92,7 +92,7 @@ class LoginService {
             uid
         };
         const token = await this.signWebIDToken(claims, expireTimeForget);
-        this.sendEmail(uid, "找回密码", "找回密码", `<a href='${webConf_1.default.email.schema}${host}/sso.html#/resetPass?token=${token}'>点击重置密码</a>, 24h小时内有效`);
+        this.sendEmail(uid, "找回密码", "找回密码", `<a href='${webConf_1.default.config.email.schema}${host}/sso.html#/resetPass?token=${token}'>点击重置密码</a>, 24h小时内有效`);
         return {};
     }
     static async resetPass(token, password) {

@@ -48,7 +48,7 @@ app.use(bodyparser());
 //国际化多语言中间件
 app.use(localeMidware);
 
-if (webConf.enableLogin) {
+if (webConf.config.enableLogin) {
     app.use(ssoMiddleware(loginConf));
 }
 
@@ -108,7 +108,7 @@ const initialize = async() => {
 
     console.log(webConf);
 
-    if (webConf.enableLogin) {
+    if (webConf.config.enableLogin) {
         LoginService.initialize();
     }
 

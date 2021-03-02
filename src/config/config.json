@@ -1,6 +1,28 @@
 
 {
     "config": {
+        "webConf": {
+            "port": 6080,          
+            "loggerPath": "./log",  
+            "logFileKeepDays": "1", 
+            "defaultLanguage": "cn", 
+            "title": "TARS文档"
+        },
+        "enableLogin": false,
+        "email": {
+            "smtp": {
+                "host": "smtp.exmail.qq.com",
+                "port": 465,
+                "secure": true,
+                "auth": {
+                    "user": "xxxx@xxxx.com",
+                    "pass": "xxxxx"
+                }
+            },
+            "schema": "http://",
+            "ignoreEmail": ["qq.com"]
+        },
+
         "repo": "https://github.com/TarsCloud/TarsDocs",
         "path": "./client/markdown",
         "interval": 3600000,

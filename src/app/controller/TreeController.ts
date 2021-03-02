@@ -249,7 +249,7 @@ class TreeController {
 
     public static async tree(ctx: Koa.Context) {
         //每次clone的时候解析一次，如果需要本地目录文件每次访问的时候，实时解析，去掉该注释
-        ctx.makeResObj(200, "succ", { tree: this._treeData, title: webConf.webConf.title });
+        ctx.makeResObj(200, "succ", { tree: this._treeData, title: webConf.config.webConf.title });
     }
 
     public static async search(ctx: Koa.Context) {
