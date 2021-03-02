@@ -36,7 +36,7 @@
         }
     },
     "git": {
-        "enableGit": false,
+        "enableGit": true,
         "repo": "https://github.com/TarsCloud/TarsDocs", 
         "path": "./client/markdown", 
         "interval": 3600000

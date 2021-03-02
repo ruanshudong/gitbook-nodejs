@@ -25,38 +25,52 @@ app.proxy = true;
 // error handler
 // onerror(app);
 
+const appInitialize = () => {
 
-//验证码
-const CONFIG = {
-    key: 'koa:sess',
-    maxAge: 1000 * 60 * 60 * 12, // 12小时, 设置 session 的有效时间，单位毫秒
-    autoCommit: true,
-    overwrite: true,
-    httpOnly: true,
-    signed: true,
-    rolling: false,
-    renew: false,
+    //验证码
+    const CONFIG = {
+        key: 'koa:sess',
+        maxAge: 1000 * 60 * 60 * 12, // 12小时, 设置 session 的有效时间，单位毫秒
+        autoCommit: true,
+        overwrite: true,
+        httpOnly: true,
+        signed: true,
+        rolling: false,
+        renew: false,
+    }
+    app.keys = ['sessionCaptcha']
+    app.use(session(CONFIG, app))
+
+    //安全防护
+    app.use(helmet());
+
+    app.use(bodyparser());
+
+    //国际化多语言中间件
+    app.use(localeMidware);
+
+    if (webConf.config.login.enableLogin) {
+        app.use(ssoMiddleware(loginConf));
+    }
+
+    app.use(staticRouter(path.join(__dirname, "../client/dist"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
+    app.use(staticRouter(webConf.config.git.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
+
+    app.use(pageRouter.routes());
+    app.use(apiRouter.routes());
+    app.use(ssoRouter.routes());
+
+    if (webConf.config.login.enableLogin) {
+        LoginService.initialize();
+    }
+
+    console.log("initialize markdown");
+    
+    TreeController.initialize();
+
+    TreeController.loadTree();
+
 }
-app.keys = ['sessionCaptcha']
-app.use(session(CONFIG, app))
-
-//安全防护
-app.use(helmet());
-
-app.use(bodyparser());
-
-//国际化多语言中间件
-app.use(localeMidware);
-
-if (webConf.config.login.enableLogin) {
-    app.use(ssoMiddleware(loginConf));
-}
-
-app.use(staticRouter(path.join(__dirname, "../client/dist"), { maxage: 7 * 24 * 60 * 60 * 1000 }));
-
-app.use(pageRouter.routes());
-app.use(apiRouter.routes());
-app.use(ssoRouter.routes());
 
 let cloning = false;
 
@@ -67,27 +81,31 @@ const doClone = async () => {
             return;
         }
 
-        console.log(`cloneing ${webConf.config.git.repo} => ${webConf.config.git.path}`);
+        const tmpPath = path.join(webConf.config.git.path, "tmp");
+        const gitPath = path.join(webConf.config.git.path, "markdown");
+        const gitBakPath = path.join(webConf.config.git.path, "markdown.bak");
+
+        console.log(`cloneing ${webConf.config.git.repo} => ${gitPath}`);
         cloning = true;
 
-        await fs.remove(webConf.respository.tmpPath);
+        await fs.remove(tmpPath);
 
-        clone(webConf.config.git.repo, webConf.respository.tmpPath, null, async (e) => {
+        clone(webConf.config.git.repo, tmpPath, null, async (e) => {
             if (!e) {
                 //clone succ
 
-                if (fs.existsSync(webConf.config.git.path)) {
-                    fs.moveSync(webConf.config.git.path, webConf.config.git.path + ".bak");
+                if (fs.existsSync(gitPath)) {
+                    fs.moveSync(gitBakPath, gitBakPath);
                 }
-                if (fs.existsSync(webConf.respository.tmpPath)) {
-                    fs.moveSync(webConf.respository.tmpPath, webConf.config.git.path);
+                if (fs.existsSync(tmpPath)) {
+                    fs.moveSync(tmpPath, gitPath);
                 }
-                await fs.remove(webConf.respository.tmpPath);
-                await fs.remove(webConf.config.git.path + ".bak");
+                await fs.remove(tmpPath);
+                await fs.remove(gitBakPath);
 
                 TreeController.loadTree();
 
-                console.log(`clone succ ${webConf.config.git.repo} => ${webConf.config.git.path}`);
+                console.log(`clone succ ${webConf.config.git.repo} => ${gitPath}`);
             } else {
                 console.log(`cloneing error: `, e);
             }
@@ -108,16 +126,8 @@ const initialize = async() => {
 
     console.log(webConf);
 
-    if (webConf.config.login.enableLogin) {
-        LoginService.initialize();
-    }
-
-    TreeController.initialize();
-
-    TreeController.loadTree();
-
-    app.use(staticRouter(webConf.config.git.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
-
+    appInitialize();
+    
     if (webConf.config.git.enableGit) {
 
         console.log('doClone');

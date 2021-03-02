@@ -3,9 +3,9 @@ import path from "path";
 
 const webConf = {
     
-    respository: {
-        tmpPath: path.join(__dirname, "../../client/tmp"),   
-    },
+    // respository: {
+    //     tmpPath: path.join(__dirname, "../../client/tmp"),   
+    // },
 
     config: {
         webConf: {
@@ -16,7 +16,7 @@ const webConf = {
             title: "文档" 
         },
         login: {
-            enableLogin: false,
+            enableLogin: true,
             email: {
                 smtp: {
                     host: "smtp.exmail.qq.com",
@@ -45,9 +45,9 @@ const webConf = {
             }
         },
         git: {
-            enableGit: false,
+            enableGit: true,
             repo: "https://github.com/TarsCloud/TarsDocs",
-            path: "./client/markdown",
+            path: "./client",
             interval: 3600000
         },
     }

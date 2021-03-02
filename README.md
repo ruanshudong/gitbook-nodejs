@@ -101,10 +101,11 @@ npm run prd
 # Docker发布
 可以编译成docker来发布
 ```sh
-
+#制作docker
 npm run docker
-docker run -p 80:6080 -v /data/doc:/root/gitbook/client/markdown tarscloud/gitbook
-docker run -p 8080:6080 -v /data/config.json:/root/gitbook/config/config.json /data/doc:/root/gitbook/client/markdown tarscloud/gitbook
+#运行docker
+docker run -p 8080:6080 -v /data/gitbook/config.json:/root/gitbook/dist/config/config.json -v /data/gitbook/TarsDocs:/root/gitbook/client/markdown tarscloud/gitbook
+docker run -p 8080:6080 -v /data/gitbook/config-git.json:/root/gitbook/dist/config/config.json -v /data/gitbook/doc:/root/gitbook/client/markdown tarscloud/gitbook
 
 ```
 

@@ -17,7 +17,7 @@ const loginConf = {
         ["data.result", true]
     ],                                  //校验通过匹配条件，可以从多层结果，多个情况
     mustLogin: ['/pages/sso/modifyPass'],           //必须要登录校验的路径, 优先级比ignore高
-    ignore: ['/static', '/pages/api/get_locale', '/sso.html', '/pages/sso'],           //不需要登录校验的路径
+    ignore: ['/static', '/pages/api/get_locale', '/sso.html', '/pages/sso', '/refresh'],           //不需要登录校验的路径
     apiPrefix: ["/pages/api"],          //接口相应的路径前缀，这类接口访问不直接跳转到登录界面，而只是提示未登录
     apiNotLoginMes: "common.noLogin",   //接口无登录权限的提示语
 };

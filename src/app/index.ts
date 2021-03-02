@@ -7,14 +7,13 @@ import { confType } from "../midware/type";
 const pageConf: Array<confType> = [
     //首页
     ["get", "/", PageController, PageController.index],
-    ["get", "/*.md", TreeController, TreeController.viewMarkdown],
+    ["get", "/refresh", TreeController, TreeController.refresh],
 ];
 
 const apiConf: Array<confType> = [
     ["get", "/get_locale", LocaleController, LocaleController.getLocale],
     ["get", "/tree", TreeController, TreeController.tree],
     ["get", "/view", TreeController, TreeController.view],
-    ["get", "/refresh", TreeController, TreeController.refresh],
     ["get", "/search", TreeController, TreeController.search]
 ];
 

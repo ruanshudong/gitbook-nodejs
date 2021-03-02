@@ -18,8 +18,6 @@ export default class LoginService {
 
     public static async initialize() {
 
-        console.log('LoginService', webConf.config);
-        
         this._loginDao = new LoginDao(webConf.config.login.dbConf);
     }
 

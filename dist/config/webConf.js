@@ -1,13 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __importDefault(require("path"));
 const webConf = {
-    respository: {
-        tmpPath: path_1.default.join(__dirname, "../../client/tmp"),
-    },
+    // respository: {
+    //     tmpPath: path.join(__dirname, "../../client/tmp"),   
+    // },
     config: {
         webConf: {
             port: 6080,
@@ -17,7 +13,7 @@ const webConf = {
             title: "文档"
         },
         login: {
-            enableLogin: false,
+            enableLogin: true,
             email: {
                 smtp: {
                     host: "smtp.exmail.qq.com",
@@ -46,9 +42,9 @@ const webConf = {
             }
         },
         git: {
-            enableGit: false,
+            enableGit: true,
             repo: "https://github.com/TarsCloud/TarsDocs",
-            path: "./client/markdown",
+            path: "./client",
             interval: 3600000
         },
     }

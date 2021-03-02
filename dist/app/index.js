@@ -10,14 +10,13 @@ const TreeController_1 = __importDefault(require("./controller/TreeController"))
 const pageConf = [
     //首页
     ["get", "/", PageController_1.default, PageController_1.default.index],
-    ["get", "/*.md", TreeController_1.default, TreeController_1.default.viewMarkdown],
+    ["get", "/refresh", TreeController_1.default, TreeController_1.default.refresh],
 ];
 exports.pageConf = pageConf;
 const apiConf = [
     ["get", "/get_locale", LocaleController_1.default, LocaleController_1.default.getLocale],
     ["get", "/tree", TreeController_1.default, TreeController_1.default.tree],
     ["get", "/view", TreeController_1.default, TreeController_1.default.view],
-    ["get", "/refresh", TreeController_1.default, TreeController_1.default.refresh],
     ["get", "/search", TreeController_1.default, TreeController_1.default.search]
 ];
 exports.apiConf = apiConf;

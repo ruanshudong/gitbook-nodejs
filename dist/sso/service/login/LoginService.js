@@ -14,7 +14,6 @@ const expireTimeRegister = 7 * 24 * 60 * 60 * 1000;
 const expireTimeForget = 1 * 24 * 60 * 60 * 1000;
 class LoginService {
     static async initialize() {
-        console.log('LoginService', webConf_1.default.config);
         this._loginDao = new LoginDao_1.LoginDao(webConf_1.default.config.login.dbConf);
     }
     //登录操作
