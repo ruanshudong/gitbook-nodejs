@@ -20,7 +20,7 @@ export default class LoginService {
 
         console.log('LoginService', webConf.config);
         
-        this._loginDao = new LoginDao(webConf.config.dbConf);
+        this._loginDao = new LoginDao(webConf.config.login.dbConf);
     }
 
 
@@ -51,7 +51,7 @@ export default class LoginService {
     protected static async sendEmail(uid: string, subject: string, title: string, html: string) {
 
         if (!this._transporter) {
-            this._transporter = await nodemailer.createTransport(webConf.config.email.smtp);
+            this._transporter = await nodemailer.createTransport(webConf.config.login.email.smtp);
 
             const info = await this._transporter.verify();
 
@@ -59,7 +59,7 @@ export default class LoginService {
         }
 
         const info = await this._transporter.sendMail({
-            from: webConf.config.email.smtp.auth.user,
+            from: webConf.config.login.email.smtp.auth.user,
             to: [uid],
             subject: subject, 
             text: title, 
@@ -84,7 +84,7 @@ export default class LoginService {
             }
             const token = await this.signWebIDToken(claims, expireTimeRegister);
 
-            this.sendEmail(uid, "激活账户", "注册", `<a href='${webConf.config.email.schema}${host}/sso.html#/activated?token=${token}'>点击激活您的账户</a>, 24h小时内有效`);
+            this.sendEmail(uid, "激活账户", "注册", `<a href='${webConf.config.login.email.schema}${host}/sso.html#/activated?token=${token}'>点击激活您的账户</a>, 24h小时内有效`);
 
             return {};
         }
@@ -126,7 +126,7 @@ export default class LoginService {
         }
         const token = await this.signWebIDToken(claims, expireTimeForget);
 
-        this.sendEmail(uid, "找回密码", "找回密码", `<a href='${webConf.config.email.schema}${host}/sso.html#/resetPass?token=${token}'>点击重置密码</a>, 24h小时内有效`);
+        this.sendEmail(uid, "找回密码", "找回密码", `<a href='${webConf.config.login.email.schema}/sso.html#/resetPass?token=${token}'>点击重置密码</a>, 24h小时内有效`);
 
         return {};
         

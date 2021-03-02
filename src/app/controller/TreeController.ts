@@ -73,7 +73,7 @@ class TreeController {
 
         this.reset();
 
-        this. _summary = path.join(webConf.config.path, 'SUMMARY.md');
+        this. _summary = path.join(webConf.config.git.path, 'SUMMARY.md');
 
         if (fs.existsSync(this._summary)) {
             const Summary = fs.readFileSync(this._summary).toString();
@@ -146,7 +146,7 @@ class TreeController {
             subpath = subpath.substring(0, anchor);
         }
 
-        const f = fs.lstatSync(path.join(webConf.config.path, subpath));
+        const f = fs.lstatSync(path.join(webConf.config.git.path, subpath));
         if (!f.isFile()) {
             subpath = defaultPage;
         }
@@ -159,7 +159,7 @@ class TreeController {
 
         // console.log('subpath', subpath);
 
-        const content = fs.readFileSync(path.join(webConf.config.path, subpath)).toString();
+        const content = fs.readFileSync(path.join(webConf.config.git.path, subpath)).toString();
 
         return { content, hrefPath };
     }

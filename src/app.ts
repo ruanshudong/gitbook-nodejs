@@ -48,7 +48,7 @@ app.use(bodyparser());
 //国际化多语言中间件
 app.use(localeMidware);
 
-if (webConf.config.enableLogin) {
+if (webConf.config.login.enableLogin) {
     app.use(ssoMiddleware(loginConf));
 }
 
@@ -67,27 +67,27 @@ const doClone = async () => {
             return;
         }
 
-        console.log(`cloneing ${webConf.config.repo} => ${webConf.config.path}`);
+        console.log(`cloneing ${webConf.config.git.repo} => ${webConf.config.git.path}`);
         cloning = true;
 
         await fs.remove(webConf.respository.tmpPath);
 
-        clone(webConf.config.repo, webConf.respository.tmpPath, null, async (e) => {
+        clone(webConf.config.git.repo, webConf.respository.tmpPath, null, async (e) => {
             if (!e) {
                 //clone succ
 
-                if (fs.existsSync(webConf.config.path)) {
-                    fs.moveSync(webConf.config.path, webConf.config.path + ".bak");
+                if (fs.existsSync(webConf.config.git.path)) {
+                    fs.moveSync(webConf.config.git.path, webConf.config.git.path + ".bak");
                 }
                 if (fs.existsSync(webConf.respository.tmpPath)) {
-                    fs.moveSync(webConf.respository.tmpPath, webConf.config.path);
+                    fs.moveSync(webConf.respository.tmpPath, webConf.config.git.path);
                 }
                 await fs.remove(webConf.respository.tmpPath);
-                await fs.remove(webConf.config.path + ".bak");
+                await fs.remove(webConf.config.git.path + ".bak");
 
                 TreeController.loadTree();
 
-                console.log(`clone succ ${webConf.config.repo} => ${webConf.config.path}`);
+                console.log(`clone succ ${webConf.config.git.repo} => ${webConf.config.git.path}`);
             } else {
                 console.log(`cloneing error: `, e);
             }
@@ -104,11 +104,11 @@ const initialize = async() => {
 
     const dbPath = path.join(__dirname, "./config/config.json");
 
-    Object.assign(webConf, JSON.parse(fs.readFileSync(dbPath, 'utf-8')));
+    Object.assign(webConf.config, JSON.parse(fs.readFileSync(dbPath, 'utf-8')));
 
     console.log(webConf);
 
-    if (webConf.config.enableLogin) {
+    if (webConf.config.login.enableLogin) {
         LoginService.initialize();
     }
 
@@ -116,18 +116,18 @@ const initialize = async() => {
 
     TreeController.loadTree();
 
-    app.use(staticRouter(webConf.config.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
+    app.use(staticRouter(webConf.config.git.path, { maxage: 7 * 24 * 60 * 60 * 1000 }));
 
-    if (process.env.CLONE_ON_START || webConf.config.cloneOnStart) {
+    if (webConf.config.git.enableGit) {
 
         console.log('doClone');
         doClone();
 
         setInterval(() => {
-            console.log('setInterval', webConf.config.interval);
+            console.log('setInterval', webConf.config.git.interval);
 
             doClone();
-        }, webConf.config.interval);
+        }, webConf.config.git.interval);
 
     }
 }

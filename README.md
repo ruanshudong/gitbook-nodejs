@@ -43,7 +43,60 @@ npm install pm2
 
 npm run prd
 
-**注意默认开启的是6080端口!!(config/webConf.ts中修改)**
+**注意默认开启的是6080端口!!(config/config.json中修改)**
+
+# config.json字段说明
+
+服务的关键字段都在config.json中(config/config.json)
+```json
+
+{
+    "webConf": {
+        "port": 6080,               //服务绑定端口
+        "loggerPath": "./log",      //日志路径
+        "logFileKeepDays": "1",     //日志保存天数
+        "defaultLanguage": "cn",    //缺省语言(目前版本无效)
+        "title": "TARS文档"          //web的title
+    },
+    "login": {
+        "enableLogin": false,           //是否开启登录(email验证和登录)
+        "email": {                      //email smtp信息, 用于发送邮件
+            "smtp": {
+                "host": "smtp.exmail.qq.com",
+                "port": 465,
+                "secure": true,
+                "auth": {
+                    "user": "xxxx@xxxx.com",
+                    "pass": "xxxxx"
+                }
+            },
+            "schema": "http://doc.tarsyun.com",            //web跳转地址
+            "ignoreEmail": ["gmail.com"]   //屏蔽哪些邮箱
+        },
+        "dbConf":  {                        //如果有登录, 则需要配置db信息
+            "database": "db_gitbook",
+            "host": "127.0.0.1",
+            "port": "3306",
+            "user": "root",
+            "password": "Root@12345",
+            "charset": "utf8mb4",
+            "pool": {
+                "max": 10,
+                "min": 0,
+                "idle": 10000
+            }
+        }
+    },
+    "git": {
+        "repo": "https://github.com/TarsCloud/TarsDocs",    //repo地址
+        "path": "./client/markdown",        //拉取到本地的地址
+        "interval": 3600000,                //定时拉取时间
+        "cloneOnStart": false              //是否定时clone
+    }
+}
+
+
+```
 
 # Docker发布
 可以编译成docker来发布

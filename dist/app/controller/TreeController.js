@@ -55,7 +55,7 @@ class TreeController {
     }
     static loadTree() {
         this.reset();
-        this._summary = path_1.default.join(webConf_1.default.config.path, 'SUMMARY.md');
+        this._summary = path_1.default.join(webConf_1.default.config.git.path, 'SUMMARY.md');
         if (fs_extra_1.default.existsSync(this._summary)) {
             const Summary = fs_extra_1.default.readFileSync(this._summary).toString();
             const tokens = marked_1.default.lexer(Summary);
@@ -112,7 +112,7 @@ class TreeController {
         if (anchor != -1) {
             subpath = subpath.substring(0, anchor);
         }
-        const f = fs_extra_1.default.lstatSync(path_1.default.join(webConf_1.default.config.path, subpath));
+        const f = fs_extra_1.default.lstatSync(path_1.default.join(webConf_1.default.config.git.path, subpath));
         if (!f.isFile()) {
             subpath = defaultPage;
         }
@@ -122,7 +122,7 @@ class TreeController {
             hrefPath = subpath.substring(0, pos);
         }
         // console.log('subpath', subpath);
-        const content = fs_extra_1.default.readFileSync(path_1.default.join(webConf_1.default.config.path, subpath)).toString();
+        const content = fs_extra_1.default.readFileSync(path_1.default.join(webConf_1.default.config.git.path, subpath)).toString();
         return { content, hrefPath };
     }
     static getHtml(url) {

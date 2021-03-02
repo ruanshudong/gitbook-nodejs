@@ -5,39 +5,52 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const webConf = {
-    // webConf: {
-    //     port: 6080,             //服务启动端口
-    //     loggerPath: path.join(__dirname, "../log"),    //本地日志的目录
-    //     logFileKeepDays: "1",         //日志保留时间
-    //     defaultLanguage: "cn",    //cn 或 en ，用户默认的语言环境
-    //     title: 'TARS文档',
-    // },
-    // enableLogin: false,
-    // email: {
-    //     smtp: {
-    //         host: 'smtp.exmail.qq.com',
-    //         port: 465,
-    //         secure: true,
-    //         auth: {
-    //             user: 'xxxx@xxxx.com',
-    //             pass: 'xxxxx',
-    //         }
-    //     },
-    //     schema: 'http://',
-    //     ignoreEmail: ['qq.com', '163.com', 'gmail.com', 'sina.com', 'foxmail.com', 'sohu.com', 'outlook.com', 'tom.com', 'sogou.com', '21cn.com', '189.com', 'yahoo.com', 'aol.com']
-    // },
     respository: {
         tmpPath: path_1.default.join(__dirname, "../../client/tmp"),
     },
     config: {
-        webConf: null,
-        email: null,
-        dbConf: null,
-        enableLogin: false,
-        path: null,
-        repo: '',
-        interval: 3600 * 1000,
-        cloneOnStart: false,
+        webConf: {
+            port: 6080,
+            loggerPath: "./log",
+            logFileKeepDays: "1",
+            defaultLanguage: "cn",
+            title: "文档"
+        },
+        login: {
+            enableLogin: false,
+            email: {
+                smtp: {
+                    host: "smtp.exmail.qq.com",
+                    port: 465,
+                    secure: true,
+                    auth: {
+                        user: "xxxx@xxxx.com",
+                        pass: "xxxxx"
+                    }
+                },
+                schema: "http://doc.tarsyun.com",
+                ignoreEmail: ["gmail.com"]
+            },
+            dbConf: {
+                database: "db_gitbook",
+                host: "127.0.0.1",
+                port: "3306",
+                user: "root",
+                password: "Root@12345",
+                charset: "utf8mb4",
+                pool: {
+                    "max": 10,
+                    "min": 0,
+                    "idle": 10000
+                }
+            }
+        },
+        git: {
+            enableGit: false,
+            repo: "https://github.com/TarsCloud/TarsDocs",
+            path: "./client/markdown",
+            interval: 3600000
+        },
     }
 };
 exports.default = webConf;

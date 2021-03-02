@@ -1,15 +1,14 @@
-
 {
-    "config": {
-        "webConf": {
-            "port": 6080,          
-            "loggerPath": "./log",  
-            "logFileKeepDays": "1", 
-            "defaultLanguage": "cn", 
-            "title": "TARS文档"
-        },
+    "webConf": {
+        "port": 6080, 
+        "loggerPath": "./log", 
+        "logFileKeepDays": "1", 
+        "defaultLanguage": "cn", 
+        "title": "TARS文档" 
+    },
+    "login": {
         "enableLogin": false,
-        "email": {
+        "email": { 
             "smtp": {
                 "host": "smtp.exmail.qq.com",
                 "port": 465,
@@ -19,15 +18,10 @@
                     "pass": "xxxxx"
                 }
             },
-            "schema": "http://",
-            "ignoreEmail": ["qq.com"]
+            "schema": "http://doc.tarsyun.com", 
+            "ignoreEmail": ["gmail.com"] 
         },
-
-        "repo": "https://github.com/TarsCloud/TarsDocs",
-        "path": "./client/markdown",
-        "interval": 3600000,
-        "cloneOnStart": false,
-        "dbConf": {
+        "dbConf": { 
             "database": "db_gitbook",
             "host": "127.0.0.1",
             "port": "3306",
@@ -40,7 +34,11 @@
                 "idle": 10000
             }
         }
+    },
+    "git": {
+        "enableGit": false,
+        "repo": "https://github.com/TarsCloud/TarsDocs", 
+        "path": "./client/markdown", 
+        "interval": 3600000
     }
-
 }
-
